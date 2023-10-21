@@ -23,9 +23,9 @@
         if (url.pathname === '/watch') {
             return url.searchParams.get('v');
         } else {
-            const match = url.pathname.match(/^\/shorts\/([a-zA-Z0-9_-]+)$/);
-            if (match && match[1])
-                return match[1];
+            const videoId = url.pathname.match(/^\/shorts\/([a-zA-Z0-9_-]+)$/)?.[1];
+            if (videoId)
+                return videoId[1];
         }
         throw new Error(`Unable to parse URL: ${href}`);
     }
@@ -33,13 +33,13 @@
     // Redirect on click.
     document.addEventListener('click', (event) => {
         if (event.target instanceof HTMLElement) {
-            const anchor = event.target.closest('a');
-            const href = anchor.getAttribute('href');
-            if (!href) return;
             try {
-                event.preventDefault();
-                event.stopPropagation();
-                window.location.assign(makeUrl(getVideoId(href)));
+                const href = event.target.closest('a')?.getAttribute('href');
+                if (href) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                    window.location.assign(makeUrl(getVideoId(href)));
+                }
             } catch (e) { }
         }
     }, true);
