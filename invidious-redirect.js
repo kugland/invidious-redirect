@@ -2,8 +2,9 @@
 // @name        Redirect to Invidious
 // @author      André Kugland
 // @description Redirects YouTube videos to an Invidious instance.
-// @namespace   invidious-redirect
-// @version     0.2
+// @namespace   https://github.com/kugland
+// @license     MIT
+// @version     0.2.1
 // @match       *://*.youtube.com/
 // @match       *://*.youtube.com/*
 // @grant       none
