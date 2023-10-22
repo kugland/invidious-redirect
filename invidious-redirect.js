@@ -4,7 +4,7 @@
 // @description Redirects YouTube videos to an Invidious instance.
 // @namespace   https://github.com/kugland
 // @license     MIT
-// @version     0.2.9
+// @version     0.2.10
 // @match       *://*.youtube.com/
 // @match       *://*.youtube.com/*
 // @run-at      document-start
@@ -89,7 +89,8 @@ catch (e) { }
         }
         #set-invidious-url:hover {
             opacity: 1;
-            box-shadow: 0px 0px 5px black;
+            bottom: 1px;
+            right: 1px;
         }
     `;
     document.head.appendChild(css);
