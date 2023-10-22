@@ -4,7 +4,7 @@
 // @description Redirects YouTube videos to an Invidious instance.
 // @namespace   https://github.com/kugland
 // @license     MIT
-// @version     0.2.6
+// @version     0.2.8
 // @match       *://*.youtube.com/
 // @match       *://*.youtube.com/*
 // @run-at      document-start
@@ -99,12 +99,13 @@ catch (e) { }
     button.src = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAwBAMAAAClLOS0AAAAJFBMVEXv8e7Z4ePn6+kWt/CZzvChpKFrbWrT1dJVV1WJjIm2uLXCxMH33HXYAAAAp0lEQVR4AeXNIQ7CMABG4ceSsXSYIXFVFaCAC5BwgblNV4HDkMwiIA0YDMnkDMHWoHY5PPwGSfjsE4+fNbZIyXIBOszR1iu+lICWFmiuRGsOaPURbXOyKINb6FDyR/AoZlefURyNnuwxelKR6YmHVk2yK3qSd+iJKdATB9Be+PAEPakATIi8STzISVaiJ2lET4YFejIBPbmDnEy3ETmZ9REARr3lP7wAXHImU2sAU14AAAAASUVORK5CYII=';
     button.addEventListener('click', () => {
         let instance = prompt('Enter the URL of the Invidious instance to use:', localStorage.getItem(instanceKey) || defaultInstance);
-        if (instance) {
-            instance = instance.replace(/^\s*(.*)\/?\s*$/, '$1');
+        instance = instance.replace(/^\s*(.*)\/*\s*$/, '$1');
+        try {
+            new URL(instance); // Make sure it's a valid URL.
             localStorage.setItem(instanceKey, instance);
         }
-        else {
-            localStorage.removeItem(instanceKey);
+        catch (e) {
+            alert(`The URL you entered is invalid: ${instance}`);
         }
     });
     document.body.appendChild(button);

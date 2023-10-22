@@ -4,7 +4,7 @@
 // @description Redirects YouTube videos to an Invidious instance.
 // @namespace   https://github.com/kugland
 // @license     MIT
-// @version     0.2.6
+// @version     0.2.8
 // @match       *://*.youtube.com/
 // @match       *://*.youtube.com/*
 // @run-at      document-start
@@ -106,11 +106,12 @@ try {
             'Enter the URL of the Invidious instance to use:',
             localStorage.getItem(instanceKey) || defaultInstance
         );
-        if (instance) {
-            instance = instance.replace(/^\s*(.*)\/?\s*$/, '$1');
+        instance = instance.replace(/^\s*(.*)\/*\s*$/, '$1');
+        try {
+            new URL(instance); // Make sure it's a valid URL.
             localStorage.setItem(instanceKey, instance);
-        } else {
-            localStorage.removeItem(instanceKey);
+        } catch (e) {
+            alert(`The URL you entered is invalid: ${instance}`);
         }
     });
     document.body.appendChild(button);
