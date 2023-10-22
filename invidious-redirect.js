@@ -4,11 +4,12 @@
 // @description Redirects YouTube videos to an Invidious instance.
 // @namespace   https://github.com/kugland
 // @license     MIT
-// @version     0.2.4
+// @version     0.2.5
 // @match       *://*.youtube.com/
 // @match       *://*.youtube.com/*
 // @run-at      document-start
-// @icon        data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAMAAACdt4HsAAAAOVBMVEVXV1d8fHygoKC+vr7IyMjc3N3i4+OIiIjw8PCVlZVkZGSqqqqysrLn6Ort7e3W1tYTt/Bubm6azvDW7xGMAAABgUlEQVR4AWIY1GAUAEgvCyzJYRiImlPmeO5/12XSiyxl1r+Z6n2z2jofYkwpxuCdNZ/k8gmE5LN5TakRDKkV84rasaHXN/IRAvEyCm1ApsmtD1CZRfj9BE4S9N8rCRMvmYbF40GPHRzeMGQ8GPd98wmO6YDOCHwLSODoa9cAysf9AZ7wWHsDn8MaSgALiZUU1gCLi9gwFl2BYBnFvVwUcztjEjZE0gLwVOpGWfwkIiwyP4TJ1HbbR6afEbw+iL7FvQJZUhEcI08IClEN6AsQFPSA4ABBQQ9wAcDcKugBq+Ongv+/gJl/PuxWStSGsXlAUpjaRLoSJAUykRyeJAuICk5ZTL4CosJSlnOeEBWisqGMNSAqNGVLm/mfMEZhLGVTrR6QFIK2rdtEhvShYJWDJVlAUvDK0TZ8BQSFvuTDtbdlqVKgCk453nv4BgghhE4boBQYQzjm5nmJc15kHZR5oRwVmqMZBXtY6h4V20q5H2s5+sNxfR1ZXR4ggHZ5BjMYBQCEgUbonii5HgAAAABJRU5ErkJggg==
+// @noframes
+// @homepageURL https://greasyfork.org/en/scripts/477967-redirect-to-invidious
 // ==/UserScript==
 "use strict";
 const instanceKey = 'invidious-redirect-instance';
@@ -73,28 +74,29 @@ catch (e) { }
 })(() => {
     const css = document.createElement('style');
     css.textContent = `
-        button#set-invidious-url {
-            font-size: 1.2em;
-            cursor: pointer;
+        #set-invidious-url {
             position: fixed;
-            padding: 0.5em;
             bottom: 0;
             right: 0;
-            opacity: 0.25;
+            height: 48px;
+            width: 48px;
             z-index: 99999;
-            font-family: inherit;
-            border: 0;
+            margin: 1rem;
+            cursor: pointer;
+            border-radius: 50%;
+            box-shadow: 0px 0px 3px black;
+            opacity: 0.5;
         }
-        button#set-invidious-url:hover,
-        button#set-invidious-url:focus {
+        #set-invidious-url:hover {
             opacity: 1;
+            box-shadow: 0px 0px 5px black;
         }
     `;
     document.head.appendChild(css);
-    const button = document.createElement('button');
+    const button = document.createElement('img');
     button.id = 'set-invidious-url';
     button.tabIndex = -1;
-    button.textContent = 'set invidious url';
+    button.src = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAwBAMAAAClLOS0AAAAJFBMVEXv8e7Z4ePn6+kWt/CZzvChpKFrbWrT1dJVV1WJjIm2uLXCxMH33HXYAAAAp0lEQVR4AeXNIQ7CMABG4ceSsXSYIXFVFaCAC5BwgblNV4HDkMwiIA0YDMnkDMHWoHY5PPwGSfjsE4+fNbZIyXIBOszR1iu+lICWFmiuRGsOaPURbXOyKINb6FDyR/AoZlefURyNnuwxelKR6YmHVk2yK3qSd+iJKdATB9Be+PAEPakATIi8STzISVaiJ2lET4YFejIBPbmDnEy3ETmZ9REARr3lP7wAXHImU2sAU14AAAAASUVORK5CYII=';
     button.addEventListener('click', () => {
         let instance = prompt('Enter the URL of the Invidious instance to use:', localStorage.getItem(instanceKey) || defaultInstance);
         if (instance) {
