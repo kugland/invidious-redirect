@@ -10,7 +10,8 @@ or by copying the contents of [invidious-redirect.js](invidious-redirect.js) int
 
 Once the script is installed, it will automatically redirect YouTube videos to your Invidious
 instance when you click on a YouTube link. By default, the script is configured to redirect to
-`http://127.0.0.1:3000`, but you can change this by editing the `makeUrl` function in the script.
+`https://yewtu.be`, but you can change this by clicking on the `set invidious url` button at the
+bottom right corner of YouTube main page.
 
 ## License
 

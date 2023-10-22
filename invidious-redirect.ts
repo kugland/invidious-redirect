@@ -4,11 +4,11 @@
 // @description Redirects YouTube videos to an Invidious instance.
 // @namespace   https://github.com/kugland
 // @license     MIT
-// @version     0.2.2
+// @version     0.2.3
 // @match       *://*.youtube.com/
 // @match       *://*.youtube.com/*
 // @run-at      document-start
-// @icon         data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgBAMAAACBVGfHAAAAGFBMVEUhAABkZmN1d3ROyPFaXFm0trPR19WJi4ibscP/AAAAAXRSTlMAQObYZgAAALtJREFUeAFiwA4AZVG3FsIwDEzb6ax01vSs9J3qnfhFv8Dvoycd1Zd6Z3X5szzP2h++LYlxmb94UJGgGSuPlDPsWoQdvVH8GsAkkN+HKgkLAxWMfGoW1KOBDzwgMMZeqD8n8wpywA9yXRGT0iEsvaWGyOFaQ7Cm8ycgyFu40H0IQYPeyIYIqmlLajpIqwcVKuHCfMnK5CRBxtqcNaRBLNq3RBrkjAFlBq/EY/yM0BmyswYsCnzsrtJdtosnoyCIGirhmt8AAAAASUVORK5CYII=
+// @icon        data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAMAAACdt4HsAAAAOVBMVEVXV1d8fHygoKC+vr7IyMjc3N3i4+OIiIjw8PCVlZVkZGSqqqqysrLn6Ort7e3W1tYTt/Bubm6azvDW7xGMAAABgUlEQVR4AWIY1GAUAEgvCyzJYRiImlPmeO5/12XSiyxl1r+Z6n2z2jofYkwpxuCdNZ/k8gmE5LN5TakRDKkV84rasaHXN/IRAvEyCm1ApsmtD1CZRfj9BE4S9N8rCRMvmYbF40GPHRzeMGQ8GPd98wmO6YDOCHwLSODoa9cAysf9AZ7wWHsDn8MaSgALiZUU1gCLi9gwFl2BYBnFvVwUcztjEjZE0gLwVOpGWfwkIiwyP4TJ1HbbR6afEbw+iL7FvQJZUhEcI08IClEN6AsQFPSA4ABBQQ9wAcDcKugBq+Ongv+/gJl/PuxWStSGsXlAUpjaRLoSJAUykRyeJAuICk5ZTL4CosJSlnOeEBWisqGMNSAqNGVLm/mfMEZhLGVTrR6QFIK2rdtEhvShYJWDJVlAUvDK0TZ8BQSFvuTDtbdlqVKgCk453nv4BgghhE4boBQYQzjm5nmJc15kHZR5oRwVmqMZBXtY6h4V20q5H2s5+sNxfR1ZXR4ggHZ5BjMYBQCEgUbonii5HgAAAABJRU5ErkJggg==
 // ==/UserScript==
 
 "use strict";
