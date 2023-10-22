@@ -4,7 +4,7 @@
 // @description Redirects YouTube videos to an Invidious instance.
 // @namespace   https://github.com/kugland
 // @license     MIT
-// @version     0.2.3
+// @version     0.2.4
 // @match       *://*.youtube.com/
 // @match       *://*.youtube.com/*
 // @run-at      document-start
@@ -74,21 +74,6 @@ try {
     else
         document.addEventListener('DOMContentLoaded', fn);
 })(() => {
-    const button = document.createElement('button');
-    button.id = 'set-invidious-url';
-    button.tabIndex = -1;
-    button.textContent = 'set invidious url';
-    button.addEventListener('click', () => {
-        let instance = prompt('Enter the URL of the Invidious instance to use:', localStorage.getItem(instanceKey) || defaultInstance);
-        if (instance) {
-            instance = instance.trim();
-            if (instance.endsWith('/'))
-                instance = instance.slice(0, -1);
-            localStorage.setItem(instanceKey, instance);
-        } else {
-            localStorage.removeItem(instanceKey);
-        }
-    });
     const css = document.createElement('style');
     css.textContent = `
         button#set-invidious-url {
@@ -108,6 +93,23 @@ try {
             opacity: 1;
         }
     `;
-    document.body.appendChild(button);
     document.head.appendChild(css);
+
+    const button = document.createElement('button');
+    button.id = 'set-invidious-url';
+    button.tabIndex = -1;
+    button.textContent = 'set invidious url';
+    button.addEventListener('click', () => {
+        let instance = prompt(
+            'Enter the URL of the Invidious instance to use:',
+            localStorage.getItem(instanceKey) || defaultInstance
+        );
+        if (instance) {
+            instance = instance.replace(/^\s*(.*)\/?\s*$/, '$1');
+            localStorage.setItem(instanceKey, instance);
+        } else {
+            localStorage.removeItem(instanceKey);
+        }
+    });
+    document.body.appendChild(button);
 });
