@@ -4,7 +4,7 @@
 // @description Redirects YouTube videos to an Invidious instance.
 // @namespace   https://github.com/kugland
 // @license     MIT
-// @version     0.2.10
+// @version     0.2.11
 // @match       *://*.youtube.com/
 // @match       *://*.youtube.com/*
 // @run-at      document-start
@@ -76,38 +76,30 @@ try {
         document.addEventListener('DOMContentLoaded', fn);
 })(() => {
     const css = document.createElement('style');
-    css.textContent = `
-        #set-invidious-url {
-            position: fixed;
-            bottom: 0;
-            right: 0;
-            height: 48px;
-            width: 48px;
-            z-index: 99999;
-            margin: 1rem;
-            cursor: pointer;
-            border-radius: 50%;
-            box-shadow: 0px 0px 3px black;
-            opacity: 0.5;
-        }
-        #set-invidious-url:hover {
-            opacity: 1;
-            bottom: 1px;
-            right: 1px;
-        }
-    `;
+    css.textContent = '#set-invidious-url:hover { opacity: 1 !important; }';
     document.head.appendChild(css);
 
     const button = document.createElement('img');
     button.id = 'set-invidious-url';
     button.tabIndex = -1;
-    button.src = `
-        data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAwBAMAAAClLOS0AAAAJFBMVEXv8e7
-        Z4ePn6+kWt/CZzvChpKFrbWrT1dJVV1WJjIm2uLXCxMH33HXYAAAAp0lEQVR4AeXNIQ7CMABG4ceSsXSY
-        IXFVFaCAC5BwgblNV4HDkMwiIA0YDMnkDMHWoHY5PPwGSfjsE4+fNbZIyXIBOszR1iu+lICWFmiuRGsOa
-        PURbXOyKINb6FDyR/AoZlefURyNnuwxelKR6YmHVk2yK3qSd+iJKdATB9Be+PAEPakATIi8STzISVaiJ2
-        lET4YFejIBPbmDnEy3ETmZ9REARr3lP7wAXHImU2sAU14AAAAASUVORK5CYII=
-    `.replace(/\s/g, '');
+    button.src = `data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAwBAMAAAClLOS0AAAAJFBMVEXv8e7
+        Z4ePn6+kWt/CZzvChpKFrbWrT1dJVV1WJjIm2uLXCxMH33HXYAAAAp0lEQVR4AeXNIQ7CMABG4ceSsXSYIXFVFaCAC5
+        BwgblNV4HDkMwiIA0YDMnkDMHWoHY5PPwGSfjsE4+fNbZIyXIBOszR1iu+lICWFmiuRGsOaPURbXOyKINb6FDyR/AoZ
+        lefURyNnuwxelKR6YmHVk2yK3qSd+iJKdATB9Be+PAEPakATIi8STzISVaiJ2lET4YFejIBPbmDnEy3ETmZ9REARr3l
+        P7wAXHImU2sAU14AAAAASUVORK5CYII=`.replace(/\s/g, '');
+    Object.assign(button.style, {
+        'position': 'fixed',
+        'bottom': 0,
+        'right': 0,
+        'height': '48px',
+        'width': '48px',
+        'z-index': 99999,
+        'margin': '1rem',
+        'cursor': 'pointer',
+        'border-radius': '50%',
+        'box-shadow': '0px 0px 3px black',
+        'opacity': 0.5,
+    });
     button.addEventListener('click', () => {
         let instance = prompt(
             'Enter the URL of the Invidious instance to use:',
