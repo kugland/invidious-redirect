@@ -1,5 +1,7 @@
 # Invidious Redirect
 
+![Greasy Fork Version](https://img.shields.io/greasyfork/v/477967-redirect-to-invidious)
+
 This userscript redirects YouTube videos to an Invidious instance.
 
 ## Usage
