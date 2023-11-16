@@ -4,6 +4,10 @@
 
 This userscript redirects YouTube videos to an Invidious instance.
 
+**GitHub page:** [https://github.com/kugland/invidious-redirect](https://github.com/kugland/invidious-redirect)
+
+**Greasy Fork page:** [https://greasyfork.org/scripts/477967-redirect-to-invidious](https://greasyfork.org/scripts/477967-redirect-to-invidious)
+
 ## Usage
 
 To use this script, you'll need a userscript manager like Tampermonkey or Greasemonkey.
