@@ -1,16 +1,4 @@
-// ==UserScript==
-// @name        Redirect to Invidious
-// @author      André Kugland
-// @description Redirects YouTube videos to an Invidious instance.
-// @namespace   https://github.com/kugland
-// @license     MIT
-// @version     0.2.12
-// @match       *://*.youtube.com/
-// @match       *://*.youtube.com/*
-// @run-at      document-start
-// @noframes
-// @homepageURL https://greasyfork.org/scripts/477967-redirect-to-invidious
-// ==/UserScript==
+import { showTable } from './select-instance';
 
 "use strict";
 
@@ -100,12 +88,9 @@ try {
         'box-shadow': '0px 0px 3px black',
         'opacity': 0.5,
     });
-    button.addEventListener('click', () => {
-        let instance = prompt(
-            'Enter the URL of the Invidious instance to use:',
-            localStorage.getItem(instanceKey) || defaultInstance
-        );
-        instance = instance.replace(/^\s*(.*)\/*\s*$/, '$1');
+    button.addEventListener('click', async () => {
+        const current = localStorage.getItem(instanceKey) ?? defaultInstance;
+        let instance = await showTable(current);
         try {
             new URL(instance); // Make sure it's a valid URL.
             localStorage.setItem(instanceKey, instance);
