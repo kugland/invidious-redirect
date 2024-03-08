@@ -4,55 +4,18 @@
 // @description Redirects YouTube videos to an Invidious instance.
 // @namespace   https://github.com/kugland
 // @license     MIT
-// @version     0.3.0
+// @version     0.3.1
 // @match       *://*.youtube.com/
 // @match       *://*.youtube.com/*
 // @run-at      document-start
 // @noframes
+// @grant       GM_xmlhttpRequest
+// @grant       GM.xmlhttpRequest
 // @homepageURL https://greasyfork.org/scripts/477967-redirect-to-invidious
 // @downloadURL https://update.greasyfork.org/scripts/477967/Redirect%20to%20Invidious.user.js
-// @updateURL https://update.greasyfork.org/scripts/477967/Redirect%20to%20Invidious.meta.js
+// @updateURL   https://update.greasyfork.org/scripts/477967/Redirect%20to%20Invidious.meta.js
 // ==/UserScript==
 (() => {
-  // instances.ts
-  var instances_default = {
-    "grwp24hodrefzvjjuccrkw3mjq4tzhaaq32amf33dzpmuxe7ilepcmad.onion": "US \u{1F1FA}\u{1F1F8}",
-    "http://pjsfhqamc7k6htnumrvn4cwqqdoggeepj7u5viyimgnxg3gar72q.b32.i2p": "FR \u{1F1EB}\u{1F1F7}",
-    "http://pjsfi2szfkb4guqzmfmlyq4no46fayertjrwt4h2uughccrh2lvq.b32.i2p": "LU \u{1F1F1}\u{1F1FA}",
-    "inv.n8pjl.ca": "CA \u{1F1E8}\u{1F1E6}",
-    "inv.nadeko.net": "CL \u{1F1E8}\u{1F1F1}",
-    "inv.nadekonw7plitnjuawu6ytjsl7jlglk2t6pyq6eftptmiv3dvqndwvyd.onion": "CL \u{1F1E8}\u{1F1F1}",
-    "inv.pjsfkvpxlinjamtawaksbnnaqs2fc2mtvmozrzckxh7f3kis6yea25ad.onion": "FR \u{1F1EB}\u{1F1F7}",
-    "inv.tux.pizza": "US \u{1F1FA}\u{1F1F8}",
-    "inv.us.projectsegfau.lt": "US \u{1F1FA}\u{1F1F8}",
-    "invidious.drgns.space": "US \u{1F1FA}\u{1F1F8}",
-    "invidious.einfachzocken.eu": "DE \u{1F1E9}\u{1F1EA}",
-    "invidious.fdn.fr": "FR \u{1F1EB}\u{1F1F7}",
-    "invidious.flokinet.to": "RO \u{1F1F7}\u{1F1F4}",
-    "invidious.g4c3eya4clenolymqbpgwz3q3tawoxw56yhzk4vugqrl6dtu3ejvhjid.onion": "FR \u{1F1EB}\u{1F1F7}",
-    "invidious.jing.rocks": "JP \u{1F1EF}\u{1F1F5}",
-    "invidious.lunar.icu": "DE \u{1F1E9}\u{1F1EA}",
-    "invidious.nerdvpn.de": "DE \u{1F1E9}\u{1F1EA}",
-    "invidious.perennialte.ch": "AU \u{1F1E6}\u{1F1FA}",
-    "invidious.privacydev.net": "FR \u{1F1EB}\u{1F1F7}",
-    "invidious.private.coffee": "AT \u{1F1E6}\u{1F1F9}",
-    "invidious.projectsegfau.lt": "FR \u{1F1EB}\u{1F1F7}",
-    "invidious.protokolla.fi": "DE \u{1F1E9}\u{1F1EA}",
-    "iv.datura.network": "DE \u{1F1E9}\u{1F1EA}",
-    "iv.ggtyler.dev": "US \u{1F1FA}\u{1F1F8}",
-    "iv.melmac.space": "DE \u{1F1E9}\u{1F1EA}",
-    "iv.nboeck.de": "FI \u{1F1EB}\u{1F1EE}",
-    "jemgkaq2xibfu37hm2xojsxoi7djtwb25w6krhl63lhn52xfzgeyc2ad.onion": "DE \u{1F1E9}\u{1F1EA}",
-    "ng27owmagn5amdm7l5s3rsqxwscl5ynppnis5dqcasogkyxcfqn7psid.onion": "DE \u{1F1E9}\u{1F1EA}",
-    "vid.puffyan.us": "US \u{1F1FA}\u{1F1F8}",
-    "yewtu.be": "DE \u{1F1E9}\u{1F1EA}",
-    "youtube.owacon.moe": "JP \u{1F1EF}\u{1F1F5}",
-    "yt.artemislena.eu": "DE \u{1F1E9}\u{1F1EA}",
-    "yt.cdaut.de": "DE \u{1F1E9}\u{1F1EA}",
-    "yt.drgnz.club": "CZ \u{1F1E8}\u{1F1FF}",
-    "zzlsbhhfvwg3oh36tcvx4r7n6jrw7zibvyvfxqlodcwn3mfrvzuq.b32.i2p": "CL \u{1F1E8}\u{1F1F1}"
-  };
-
   // select-instance.ts
   function getStyle() {
     const style = document.createElement("style");
@@ -108,15 +71,32 @@
     else
       return `https://${uri}`;
   }
-  function getTable(current) {
-    let sorted = Array.from(Object.keys(instances_default)).sort((a, b) => {
-      const region_a = instances_default[a];
-      const region_b = instances_default[b];
-      if (region_a !== region_b)
-        return region_a.localeCompare(region_b);
-      else
-        return a.localeCompare(b);
-    }).map((uri) => [uri, instances_default[uri]]);
+  async function getInstances() {
+    const instancesLastUpdatedKey = "invidious-redirect-instances-last-updated";
+    const instancesKey = "invidious-redirect-instances";
+    const now = Date.now();
+    const lastUpdated = parseInt(localStorage.getItem(instancesLastUpdatedKey) ?? "0");
+    if (lastUpdated && now - lastUpdated < 864e5) {
+      return JSON.parse(localStorage.getItem(instancesKey));
+    } else {
+      const instances = await new Promise((resolve) => {
+        (GM.xmlHttpRequest || GM_xmlhttpRequest)({
+          method: "GET",
+          headers: { "Content-Type": "application/json" },
+          url: "https://raw.githubusercontent.com/kugland/invidious-redirect/master/instances.json",
+          onload: function(response) {
+            resolve(JSON.parse(response.responseText));
+          }
+        });
+      });
+      localStorage.setItem(instancesKey, JSON.stringify(instances));
+      localStorage.setItem(instancesLastUpdatedKey, now.toString());
+      return instances;
+    }
+  }
+  async function getTable(current) {
+    const instances = await getInstances();
+    let sorted = Array.from(Object.keys(instances)).sort((a, b) => instances[a] !== instances[b] ? instances[a].localeCompare(instances[b]) : a.localeCompare(b)).map((uri) => [uri, instances[uri]]);
     return sorted.map(([uri, region]) => [uri, region]).filter(([uri]) => !uri.endsWith(".i2p") && !uri.endsWith(".onion")).map(([uri, region]) => {
       let url = addProtocol(uri);
       uri = uri.replace(/^https?:\/\//, "");
@@ -129,13 +109,13 @@
             `;
     }).join("");
   }
-  function showTable(current) {
+  async function showTable(current) {
     const table = document.createElement("div");
     table.id = "invidious-instance-container";
-    table.innerHTML = `<table id="invidious-instance-table">${getTable(current)}</table>`;
+    table.innerHTML = `<table id="invidious-instance-table">${await getTable(current)}</table>`;
     table.appendChild(getStyle());
     document.body.appendChild(table);
-    return new Promise((resolve) => {
+    return await new Promise((resolve) => {
       table.querySelectorAll("button").forEach((button) => {
         button.addEventListener("click", (e) => {
           const tr = e.target.closest("tr");
@@ -162,7 +142,7 @@
   function getVideoId(href) {
     const url = new URL(href, window.location.href);
     if (url.pathname === "/watch") {
-      return url.searchParams.get("v");
+      return url.searchParams.get("v") ?? "";
     } else {
       const videoId = url.pathname.match(/^\/shorts\/([a-zA-Z0-9_-]+)$/)?.[1];
       if (videoId)

@@ -1,5 +1,3 @@
-import instances from './instances.js';
-
 type Instances = Record<string, string>;
 
 function getStyle(): HTMLStyleElement {
@@ -58,15 +56,51 @@ function addProtocol(uri: string) {
         return `https://${uri}`;
 }
 
-function getTable(current: string | null): string {
-    let sorted = Array.from(Object.keys(instances as Instances)).sort((a, b) => {
-        const region_a = instances[a];
-        const region_b = instances[b];
-        if (region_a !== region_b)
-            return region_a.localeCompare(region_b);
-        else
-            return a.localeCompare(b);
-    }).map((uri) => [uri, instances[uri]] as const);
+declare const GM_xmlhttpRequest: {
+    (details: {
+        method: 'GET' | 'POST',
+        headers: Record<string, string>,
+        url: string,
+        onload: (response: { responseText: string }) => void,
+    }): void;
+};
+
+declare const GM: {
+    xmlHttpRequest: typeof GM_xmlhttpRequest;
+};
+
+async function getInstances(): Promise<Instances> {
+    const instancesLastUpdatedKey = 'invidious-redirect-instances-last-updated';
+    const instancesKey = 'invidious-redirect-instances';
+    const now = Date.now();
+    const lastUpdated = parseInt(localStorage.getItem(instancesLastUpdatedKey) ?? "0");
+    if (lastUpdated && (now - lastUpdated) < 86400000) {
+        return JSON.parse(localStorage.getItem(instancesKey) as string);
+    } else {
+        const instances = await (new Promise((resolve) => {
+            (GM.xmlHttpRequest || GM_xmlhttpRequest)({
+                method: "GET",
+                headers: { "Content-Type": "application/json" },
+                url: "https://raw.githubusercontent.com/kugland/invidious-redirect/master/instances.json",
+                onload: function(response) {
+                    resolve(JSON.parse(response.responseText));
+                }
+            });
+        })) as Instances;
+        localStorage.setItem(instancesKey, JSON.stringify(instances));
+        localStorage.setItem(instancesLastUpdatedKey, now.toString());
+        return instances;
+    }
+}
+
+async function getTable(current: string | null): Promise<string> {
+    const instances = await getInstances();
+
+    let sorted = Array.from(Object.keys(instances as Instances))
+        .sort((a, b) => (instances[a] !== instances[b])
+                            ? instances[a].localeCompare(instances[b])
+                            : a.localeCompare(b))
+        .map((uri) => [uri, instances[uri]] as const);
 
     return sorted
         .map(([uri, region]) => [uri, region] as const)
@@ -85,13 +119,13 @@ function getTable(current: string | null): string {
         .join('');
 }
 
-export function showTable(current: string): Promise<string> {
+export async function showTable(current: string): Promise<string> {
     const table = document.createElement('div');
     table.id = 'invidious-instance-container';
-    table.innerHTML = `<table id="invidious-instance-table">${getTable(current)}</table>`;
+    table.innerHTML = `<table id="invidious-instance-table">${await getTable(current)}</table>`;
     table.appendChild(getStyle());
     document.body.appendChild(table);
-    return new Promise((resolve) => {
+    return await (new Promise((resolve) => {
         table.querySelectorAll('button').forEach((button) => {
             button.addEventListener('click', (e) => {
                 const tr = (e.target as HTMLButtonElement).closest('tr');
@@ -104,5 +138,5 @@ export function showTable(current: string): Promise<string> {
                 }
             });
         });
-    });
+    }));
 }

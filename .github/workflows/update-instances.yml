@@ -1,0 +1,27 @@
+name: Update instances.json
+
+on:
+    workflow_dispatch: {}
+    schedule:
+        - cron:  '30 5 * * 0,3'
+
+jobs:
+    update-instances:
+        name: Update instances.json
+        runs-on: ubuntu-latest
+        steps:
+            - name: Install curl and jq
+              run: sudo apt-get -y update && sudo apt-get install -y curl jq
+            - uses: extractions/setup-just@v1
+            - uses: actions/checkout@v4
+            - name: Update instances, and push if changed
+              run: |
+                set -eux -o pipefail
+                just update-instances
+                git add instances.json
+                if git status --porcelain | grep -E '\binstances\.json\b'; then
+                  git config --global user.email "Github Actions <nobody@github.com>"
+                  git config --global user.name "Github Actions"
+                  git commit -m "Instances updated"
+                  git push
+                fi

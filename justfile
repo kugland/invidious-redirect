@@ -6,8 +6,6 @@ build:
 # Update instances.json
 update-instances:
     #!/usr/bin/env bash
-    (
-        echo -n 'export default '
-        curl -sSL https://api.invidious.io/instances.json?pretty=0 \
-            | jq -S 'map({ (.[0]): (.[1].region + " " + .[1].flag) }) | add'
-    ) > instances.ts
+    curl -sSL https://api.invidious.io/instances.json?pretty=0 \
+            | jq -S 'map({ (.[0]): (.[1].region + " " + .[1].flag) }) | add' \
+            > instances.json
