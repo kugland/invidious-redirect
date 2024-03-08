@@ -17,7 +17,7 @@ function makeUrl(videoId: string): string {
 function getVideoId(href: string): string {
     const url = new URL(href, window.location.href);
     if (url.pathname === '/watch') {
-        return url.searchParams.get('v');
+        return url.searchParams.get('v') ?? "";
     } else {
         const videoId = url.pathname.match(/^\/shorts\/([a-zA-Z0-9_-]+)$/)?.[1];
         if (videoId)

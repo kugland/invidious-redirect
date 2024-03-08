@@ -4,12 +4,14 @@
 // @description Redirects YouTube videos to an Invidious instance.
 // @namespace   https://github.com/kugland
 // @license     MIT
-// @version     0.3.0
+// @version     0.3.1
 // @match       *://*.youtube.com/
 // @match       *://*.youtube.com/*
 // @run-at      document-start
 // @noframes
+// @grant       GM_xmlhttpRequest
+// @grant       GM.xmlhttpRequest
 // @homepageURL https://greasyfork.org/scripts/477967-redirect-to-invidious
 // @downloadURL https://update.greasyfork.org/scripts/477967/Redirect%20to%20Invidious.user.js
-// @updateURL https://update.greasyfork.org/scripts/477967/Redirect%20to%20Invidious.meta.js
+// @updateURL   https://update.greasyfork.org/scripts/477967/Redirect%20to%20Invidious.meta.js
 // ==/UserScript==
