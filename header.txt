@@ -1,0 +1,15 @@
+// ==UserScript==
+// @name        Redirect to Invidious
+// @author      André Kugland
+// @description Redirects YouTube videos to an Invidious instance.
+// @namespace   https://github.com/kugland
+// @license     MIT
+// @version     0.3.0
+// @match       *://*.youtube.com/
+// @match       *://*.youtube.com/*
+// @run-at      document-start
+// @noframes
+// @homepageURL https://greasyfork.org/scripts/477967-redirect-to-invidious
+// @downloadURL https://update.greasyfork.org/scripts/477967/Redirect%20to%20Invidious.user.js
+// @updateURL https://update.greasyfork.org/scripts/477967/Redirect%20to%20Invidious.meta.js
+// ==/UserScript==

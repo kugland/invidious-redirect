@@ -19,6 +19,17 @@ instance when you click on a YouTube link. By default, the script is configured 
 `https://yewtu.be`, but you can change this by clicking on the Invidious icon at the bottom right
 corner of YouTube main page.
 
+## Using a custom Invidious instance
+
+I assume that if you are going to use a custom Invidious instance, you are a so-called "power
+user", so just open the dev console and type:
+
+```javascript
+localStorage.setItem('invidious-redirect-instance', 'http://127.0.0.1:8000');
+```
+
+Replacing, naturally, your custom Invidious instance URL.
+
 ## License
 
 This script is released under the MIT License. See the [LICENSE](LICENSE) file for details.
