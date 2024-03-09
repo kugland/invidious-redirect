@@ -12,7 +12,7 @@ jobs:
         steps:
             - name: Install curl and jq
               run: sudo apt-get -y update && sudo apt-get install -y curl jq
-            - uses: extractions/setup-just@v1
+            - uses: extractions/setup-just@v2
             - uses: actions/checkout@v4
             - name: Update instances, and push if changed
               run: |
