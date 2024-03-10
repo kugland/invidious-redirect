@@ -1,0 +1,166 @@
+#set-invidious-url {
+    position: fixed;
+    bottom: 0;
+    right: 0;
+    height: 48px;
+    width: 48px;
+    z-index: 99998;
+    margin: 1rem;
+    cursor: pointer;
+    border-radius: 50%;
+    box-shadow: 0px 0px 3px black;
+    opacity: 0.5;
+    &:hover { opacity: 1 !important; }
+}
+
+#invidious-instance-container {
+    &, & * {
+        font-family: mono;
+        font-size: 12px;
+        box-sizing: border-box;
+    }
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.2);
+    backdrop-filter: blur(2px);
+    display: grid;
+    place-content: center;
+    z-index: 99999;
+    overflow-y: auto;
+    >div {
+        background-color: white;
+        box-shadow: 10px 10px 20px rgba(0, 0, 0, 0.5);
+        border-radius: 5px;
+        user-select: none;
+    }
+    header, footer { background-color: #eee; }
+    header {
+        border-radius: 5px 5px 0 0;
+        display: grid;
+        grid-template: "title refresh close" auto
+                       "rateme rateme rateme" / 1fr auto auto;
+        align-items: center;
+        border-bottom: 1px solid #ccc;
+        >span { padding-left: 10px; }
+    }
+    footer {
+        border-radius: 0 0 5px 5px;
+        padding: 10px;
+        display: grid;
+        grid-template-columns: 1fr auto;
+        gap: 10px;
+        border-top: 1px solid #ccc;
+        input {
+            padding: 5px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            width: 100%;
+        }
+        button {
+            padding: 5px 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            cursor: pointer;
+            background-color: #eee;
+            &:hover, &:focus { background-color: #ddd; }
+            &:active { background-color: #ccc; }
+        }
+    }
+    table {
+        border-collapse: collapse;
+        margin: 3px 0;
+    }
+    td {
+        padding: 0 10px;
+        cursor: pointer;
+        a {
+            position: relative;
+            top: 1px;
+            color: #888;
+            text-decoration: none;
+            --stroke-width: 8;
+        }
+        a:hover {
+            color: #000;
+            --stroke-width: 12;
+        }
+    }
+    tr {
+        &:hover td { background-color: #eee; }
+    }
+    .input-helper {
+        opacity: 0;
+        font-size: 12px;
+        position: absolute;
+        background-color: rgba(0, 0, 0, 0.8);
+        color: white;
+        bottom: 20px;
+        left: 0;
+        right: 0;
+        padding: 5px 10px;
+        margin: 0 25px;
+        pointer-events: none;
+        border-radius: 5px;
+        text-align: center;
+        transition: 0.5s ease all;
+        &::after {
+            content: "";
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            border: solid transparent;
+            height: 0;
+            width: 0;
+            border-top-color: black;
+            border-width: 8px;
+            margin-left: -8px;
+        }
+    }
+    .input-container {
+        position: relative;
+    }
+    .input-container:hover .input-helper {
+        opacity: 1;
+        bottom: 30px;
+    }
+
+    .refresh, .close {
+        cursor: pointer;
+        color: black;
+        text-decoration: none;
+        font-size: 20px;
+        &:hover, &:focus { font-weight: bold; }
+        padding: 5px 10px;
+        border-top-right-radius: 5px;
+        &:hover {
+            color: white;
+            background-color: rgba(255, 0, 0, 0.5);
+        }
+    }
+    .refresh {
+        border-top-right-radius: 0;
+        &:hover {
+            background-color: rgba(0, 192, 0, 0.5);
+        }
+    }
+    .rateme {
+        justify-self: stretch;
+        grid-area: rateme;
+        display: flex;
+        justify-content: center;
+        background-color: #ddd;
+        padding: 5px 10px;
+        .emoji {
+            font-variant-emoji: emoji;
+        }
+        color: black;
+        text-decoration: none;
+        &:hover, &:focus {
+            font-weight: bold;
+            background-color: #ccc;
+        }
+    }
+}
