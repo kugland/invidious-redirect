@@ -35,5 +35,5 @@ URL.
 
 ## License
 
-This script is released under the MIT License. See the [LICENSE](LICENSE) file
+This script is released under the MIT License. See the [LICENSE](https://raw.githubusercontent.com/kugland/invidious-redirect/master/LICENSE) file
 for details.
