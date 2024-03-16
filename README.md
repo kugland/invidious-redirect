@@ -24,7 +24,7 @@ into a new userscript.
 
 Once the script is installed, it will automatically redirect YouTube videos to
 your Invidious instance when you click on a YouTube link. By default, the script
-is configured to redirect to `https://invidious.protokolla.fi`, but you can change
+is configured to redirect to `https://invidious.lunar.icu`, but you can change
 this by clicking on the Invidious icon at the bottom right corner of YouTube main
 page.
 
