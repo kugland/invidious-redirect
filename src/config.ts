@@ -1,5 +1,5 @@
 // @ts-ignore
-const DEFAULT_INSTANCE_URL = "https://invidious.protokolla.fi";
+const DEFAULT_INSTANCE_URL = "https://invidious.lunar.icu";
 const INSTANCES_JSON_URL = "https://raw.githubusercontent.com/kugland" +
     "/invidious-redirect/master/instances.json";
 const INSTANCE_URL_KEY = "invidious-redirect--instance";

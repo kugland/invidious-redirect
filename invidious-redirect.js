@@ -4,7 +4,7 @@
 // @description Redirects YouTube videos to an Invidious instance.
 // @namespace   https://github.com/kugland
 // @license     MIT
-// @version     0.3.3
+// @version     0.3.4
 // @match       https://www.youtube.com/*
 // @match       https://m.youtube.com/*
 // @exclude     *://music.youtube.com/*
@@ -36,7 +36,7 @@
   }
 
   // src/config.ts
-  var DEFAULT_INSTANCE_URL = "https://invidious.protokolla.fi";
+  var DEFAULT_INSTANCE_URL = "https://invidious.lunar.icu";
   var INSTANCES_JSON_URL = "https://raw.githubusercontent.com/kugland/invidious-redirect/master/instances.json";
   var INSTANCE_URL_KEY = "invidious-redirect--instance";
   var INSTANCES_KEY = "invidious-redirect--public-instances";
