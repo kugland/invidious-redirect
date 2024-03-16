@@ -12,6 +12,8 @@ export function getVideoId(url: string): string {
             videoId = urlObj.searchParams.get("v");
         } else if (urlObj.pathname.startsWith("/shorts/")) {
             videoId = urlObj.pathname.slice(8);
+        } else if (urlObj.pathname.startsWith("/live/")) {
+            videoId = urlObj.pathname.slice(6);
         } else if (urlObj.hostname === "youtu.be") {
             videoId = urlObj.pathname.slice(1);
         }
