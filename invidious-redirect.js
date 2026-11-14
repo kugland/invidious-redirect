@@ -4,7 +4,7 @@
 // @description Redirects YouTube videos to an Invidious instance.
 // @namespace   https://github.com/kugland
 // @license     MIT
-// @version     0.3.4
+// @version     0.3.5
 // @match       https://www.youtube.com/*
 // @match       https://m.youtube.com/*
 // @exclude     *://music.youtube.com/*
@@ -36,7 +36,7 @@
   }
 
   // src/config.ts
-  var DEFAULT_INSTANCE_URL = "https://invidious.lunar.icu";
+  var DEFAULT_INSTANCE_URL = "https://inv.nadeko.net";
   var INSTANCES_JSON_URL = "https://raw.githubusercontent.com/kugland/invidious-redirect/master/instances.json";
   var INSTANCE_URL_KEY = "invidious-redirect--instance";
   var INSTANCES_KEY = "invidious-redirect--public-instances";
@@ -143,19 +143,16 @@
         </div>
     `);
     const input = dialog.querySelector("footer input");
-    if (!input)
-      return;
+    if (!input) return;
     input.value = getInstanceUrl() || "";
     input.placeholder = "invidious.snopyta.org";
     document.body.appendChild(dialog);
     dialog.addEventListener("click", (event) => {
       const target = event.target;
-      if (!(target instanceof HTMLElement))
-        return;
+      if (!(target instanceof HTMLElement)) return;
       const dialog2 = target.closest(`#${INVIDIOUS_INSTANCE_CONTAINER}`);
       const input2 = dialog2?.querySelector("footer input");
-      if (!dialog2 || !input2)
-        return;
+      if (!dialog2 || !input2) return;
       if (target.tagName != "A") {
         event.preventDefault();
         event.stopPropagation();
@@ -187,7 +184,7 @@
   var button_default = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAwBAMAAAClLOS0AAAAJFBMVEXv8e7Z4ePn6+kWt/CZzvChpKFrbWrT1dJVV1WJjIm2uLXCxMH33HXYAAAAp0lEQVR4AeXNIQ7CMABG4ceSsXSYIXFVFaCAC5BwgblNV4HDkMwiIA0YDMnkDMHWoHY5PPwGSfjsE4+fNbZIyXIBOszR1iu+lICWFmiuRGsOaPURbXOyKINb6FDyR/AoZlefURyNnuwxelKR6YmHVk2yK3qSd+iJKdATB9Be+PAEPakATIi8STzISVaiJ2lET4YFejIBPbmDnEy3ETmZ9REARr3lP7wAXHImU2sAU14AAAAASUVORK5CYII=";
 
   // css/style.css
-  var style_default = '#set-invidious-url{position:fixed;bottom:0;right:0;height:48px;width:48px;z-index:99998;margin:1rem;cursor:pointer;border-radius:50%;box-shadow:0px 0px 3px #000;opacity:.5}#set-invidious-url:hover{opacity:1 !important}#invidious-instance-container{position:fixed;top:0;left:0;right:0;bottom:0;background-color:rgba(0,0,0,.2);backdrop-filter:blur(2px);display:grid;place-content:center;z-index:99999;overflow-y:auto}#invidious-instance-container,#invidious-instance-container *{font-family:mono;font-size:12px;box-sizing:border-box}#invidious-instance-container>div{background-color:#fff;box-shadow:10px 10px 20px rgba(0,0,0,.5);border-radius:5px;user-select:none}#invidious-instance-container header,#invidious-instance-container footer{background-color:#eee}#invidious-instance-container header{border-radius:5px 5px 0 0;display:grid;grid-template:"title refresh close" auto "rateme rateme rateme"/1fr auto auto;align-items:center;border-bottom:1px solid #ccc}#invidious-instance-container header>span{padding-left:10px}#invidious-instance-container footer{border-radius:0 0 5px 5px;padding:10px;display:grid;grid-template-columns:1fr auto;gap:10px;border-top:1px solid #ccc}#invidious-instance-container footer input{padding:5px;border:1px solid #ccc;border-radius:5px;width:100%}#invidious-instance-container footer button{padding:5px 10px;border:1px solid #ccc;border-radius:5px;cursor:pointer;background-color:#eee}#invidious-instance-container footer button:hover,#invidious-instance-container footer button:focus{background-color:#ddd}#invidious-instance-container footer button:active{background-color:#ccc}#invidious-instance-container table{border-collapse:collapse;margin:3px 0}#invidious-instance-container td{padding:0 10px;cursor:pointer}#invidious-instance-container td a{position:relative;top:1px;color:#888;text-decoration:none;--stroke-width: 8}#invidious-instance-container td a:hover{color:#000;--stroke-width: 12}#invidious-instance-container tr:hover td{background-color:#eee}#invidious-instance-container .input-helper{opacity:0;font-size:12px;position:absolute;background-color:rgba(0,0,0,.8);color:#fff;bottom:20px;left:0;right:0;padding:5px 10px;margin:0 25px;pointer-events:none;border-radius:5px;text-align:center;transition:.5s ease all}#invidious-instance-container .input-helper::after{content:"";position:absolute;top:100%;left:50%;border:solid rgba(0,0,0,0);height:0;width:0;border-top-color:#000;border-width:8px;margin-left:-8px}#invidious-instance-container .input-container{position:relative}#invidious-instance-container .input-container:hover .input-helper{opacity:1;bottom:30px}#invidious-instance-container .refresh,#invidious-instance-container .close{cursor:pointer;color:#000;text-decoration:none;font-size:20px;padding:5px 10px;border-top-right-radius:5px}#invidious-instance-container .refresh:hover,#invidious-instance-container .refresh:focus,#invidious-instance-container .close:hover,#invidious-instance-container .close:focus{font-weight:bold}#invidious-instance-container .refresh:hover,#invidious-instance-container .close:hover{color:#fff;background-color:rgba(255,0,0,.5)}#invidious-instance-container .refresh{border-top-right-radius:0}#invidious-instance-container .refresh:hover{background-color:rgba(0,192,0,.5)}#invidious-instance-container .rateme{justify-self:stretch;grid-area:rateme;display:flex;justify-content:center;background-color:#ddd;padding:5px 10px;color:#000;text-decoration:none}#invidious-instance-container .rateme .emoji{font-variant-emoji:emoji}#invidious-instance-container .rateme:hover,#invidious-instance-container .rateme:focus{font-weight:bold;background-color:#ccc}\n';
+  var style_default = '#set-invidious-url{position:fixed;bottom:0;right:0;height:48px;width:48px;z-index:99998;margin:1rem;cursor:pointer;border-radius:50%;box-shadow:0px 0px 3px #000;opacity:.5}#set-invidious-url:hover{opacity:1 !important}#invidious-instance-container,#invidious-instance-container *{font-family:mono;font-size:12px;box-sizing:border-box}#invidious-instance-container{position:fixed;top:0;left:0;right:0;bottom:0;background-color:rgba(0,0,0,.2);backdrop-filter:blur(2px);display:grid;place-content:center;z-index:99999;overflow-y:auto}#invidious-instance-container>div{background-color:#fff;box-shadow:10px 10px 20px rgba(0,0,0,.5);border-radius:5px;user-select:none}#invidious-instance-container header,#invidious-instance-container footer{background-color:#eee}#invidious-instance-container header{border-radius:5px 5px 0 0;display:grid;grid-template:"title refresh close" auto "rateme rateme rateme"/1fr auto auto;align-items:center;border-bottom:1px solid #ccc}#invidious-instance-container header>span{padding-left:10px}#invidious-instance-container footer{border-radius:0 0 5px 5px;padding:10px;display:grid;grid-template-columns:1fr auto;gap:10px;border-top:1px solid #ccc}#invidious-instance-container footer input{padding:5px;border:1px solid #ccc;border-radius:5px;width:100%}#invidious-instance-container footer button{padding:5px 10px;border:1px solid #ccc;border-radius:5px;cursor:pointer;background-color:#eee}#invidious-instance-container footer button:hover,#invidious-instance-container footer button:focus{background-color:#ddd}#invidious-instance-container footer button:active{background-color:#ccc}#invidious-instance-container table{border-collapse:collapse;margin:3px 0}#invidious-instance-container td{padding:0 10px;cursor:pointer}#invidious-instance-container td a{position:relative;top:1px;color:#888;text-decoration:none;--stroke-width: 8}#invidious-instance-container td a:hover{color:#000;--stroke-width: 12}#invidious-instance-container tr:hover td{background-color:#eee}#invidious-instance-container .input-helper{opacity:0;font-size:12px;position:absolute;background-color:rgba(0,0,0,.8);color:#fff;bottom:20px;left:0;right:0;padding:5px 10px;margin:0 25px;pointer-events:none;border-radius:5px;text-align:center;transition:.5s ease all}#invidious-instance-container .input-helper::after{content:"";position:absolute;top:100%;left:50%;border:solid rgba(0,0,0,0);height:0;width:0;border-top-color:#000;border-width:8px;margin-left:-8px}#invidious-instance-container .input-container{position:relative}#invidious-instance-container .input-container:hover .input-helper{opacity:1;bottom:30px}#invidious-instance-container .refresh,#invidious-instance-container .close{cursor:pointer;color:#000;text-decoration:none;font-size:20px}#invidious-instance-container .refresh:hover,#invidious-instance-container .refresh:focus,#invidious-instance-container .close:hover,#invidious-instance-container .close:focus{font-weight:bold}#invidious-instance-container .refresh,#invidious-instance-container .close{padding:5px 10px;border-top-right-radius:5px}#invidious-instance-container .refresh:hover,#invidious-instance-container .close:hover{color:#fff;background-color:rgba(255,0,0,.5)}#invidious-instance-container .refresh{border-top-right-radius:0}#invidious-instance-container .refresh:hover{background-color:rgba(0,192,0,.5)}#invidious-instance-container .rateme{justify-self:stretch;grid-area:rateme;display:flex;justify-content:center;background-color:#ddd;padding:5px 10px}#invidious-instance-container .rateme .emoji{font-variant-emoji:emoji}#invidious-instance-container .rateme{color:#000;text-decoration:none}#invidious-instance-container .rateme:hover,#invidious-instance-container .rateme:focus{font-weight:bold;background-color:#ccc}\n';
 
   // src/videourl.ts
   function getVideoId(url) {
