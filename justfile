@@ -55,6 +55,14 @@ _build_internal target js css:
 
     "${ESBUILD_CMD[@]}"
 
+# Run the Playwright end-to-end tests (e.g. `just test --test-name-pattern=dialog`)
+test *args:
+    #!/usr/bin/env bash
+    set -eu -o pipefail
+    # esbuild and chromium (CHROMIUM_PATH) come from the Nix dev shell; playwright-core from npm.
+    [[ -d node_modules/playwright-core ]] || npm ci
+    node --test {{ args }} test/*.test.mjs
+
 # Update instances.json
 update-instances:
     #!/usr/bin/env bash

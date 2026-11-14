@@ -3,7 +3,7 @@ name: Update instances.json
 on:
     workflow_dispatch: {}
     schedule:
-        - cron:  '30 5 * * 0,3'
+        - cron: "30 5 * * 0,3"
 
 jobs:
     update-instances:
@@ -16,12 +16,12 @@ jobs:
             - uses: actions/checkout@v7
             - name: Update instances, and push if changed
               run: |
-                set -eux -o pipefail
-                just update-instances
-                git add instances.json
-                if git status --porcelain | grep -E '\binstances\.json\b'; then
-                  git config --global user.email "Github Actions <nobody@github.com>"
-                  git config --global user.name "Github Actions"
-                  git commit -m "Instances updated"
-                  git push
-                fi
+                  set -eux -o pipefail
+                  just update-instances
+                  git add instances.json
+                  if git status --porcelain | grep -E '\binstances\.json\b'; then
+                    git config --global user.email "Github Actions <nobody@github.com>"
+                    git config --global user.name "Github Actions"
+                    git commit -m "Instances updated"
+                    git push
+                  fi

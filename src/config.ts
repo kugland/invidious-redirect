@@ -1,43 +1,81 @@
 // @ts-ignore
 const DEFAULT_INSTANCE_URL = "https://inv.nadeko.net";
-const INSTANCES_JSON_URL = "https://raw.githubusercontent.com/kugland" +
+const INSTANCES_JSON_URL =
+    "https://raw.githubusercontent.com/kugland" +
     "/invidious-redirect/master/instances.json";
 const INSTANCE_URL_KEY = "invidious-redirect--instance";
 const INSTANCES_KEY = "invidious-redirect--public-instances";
 const UPDATED_KEY = "invidious-redirect--public-instances-updated";
 
-let instanceUrl = localStorage.getItem(INSTANCE_URL_KEY) || DEFAULT_INSTANCE_URL;
-let publicInstances = JSON.parse(localStorage.getItem(INSTANCES_KEY) || "{}") as Record<string, string>;
+/**
+ * Normalize an instance URL: trim whitespace and trailing slashes, and drop the `https://` scheme,
+ * which is implied. An explicit `http://` scheme is kept. Returns "" if nothing is left.
+ */
+function normalizeInstanceUrl(url: string): string {
+    const trimmed = url.trim();
+    const scheme = /^http:\/\//i.test(trimmed) ? "http://" : "";
+    const rest = trimmed.replace(/^https?:\/\//i, "").replace(/\/+$/, "");
+    return rest ? scheme + rest : "";
+}
+
+let instanceUrl =
+    normalizeInstanceUrl(localStorage.getItem(INSTANCE_URL_KEY) || "") ||
+    normalizeInstanceUrl(DEFAULT_INSTANCE_URL);
+let publicInstances = JSON.parse(
+    localStorage.getItem(INSTANCES_KEY) || "{}",
+) as Record<string, string>;
 let instancesUpdated = parseInt(localStorage.getItem(UPDATED_KEY) || "0");
 
 /** Get the instance URL that we should redirect to. */
 export function getInstanceUrl() {
-    return instanceUrl.replace(/\/$/, "").replace(/^https:\/\//, "");
+    return instanceUrl;
+}
+
+/** Turn a normalized instance URL into a full one, with its scheme. */
+function toFullUrl(normalized: string): string {
+    return normalized.startsWith("http://")
+        ? normalized
+        : `https://${normalized}`;
 }
 
 /** Get the full instance URL that we should redirect to. */
 export function getFullInstanceUrl() {
-    if (instanceUrl.startsWith("http://")) {
-        return instanceUrl;
-    } else {
-        return `https://${instanceUrl}`;
+    return toFullUrl(instanceUrl);
+}
+
+/** Check whether the user-provided string is a usable instance URL. */
+export function isValidInstanceUrl(url: string): boolean {
+    try {
+        return new URL(toFullUrl(normalizeInstanceUrl(url))).hostname !== "";
+    } catch (e) {
+        return false;
     }
 }
 
 /** Set the instance URL that we should redirect to. */
 export function setInstanceUrl(url: string) {
-    instanceUrl = url.replace(/\/$/, "").replace(/^https:\/\//, "");
-    localStorage.setItem(INSTANCE_URL_KEY, url);
+    instanceUrl = normalizeInstanceUrl(url);
+    localStorage.setItem(INSTANCE_URL_KEY, instanceUrl);
 }
 
 /** Get the public instances list. */
 export async function getInstances(): Promise<Record<string, string>> {
     const now = Date.now();
-    const expired = (now - instancesUpdated) > 86400000;
+    const expired = now - instancesUpdated > 86400000;
     if (Object.keys(publicInstances).length !== 0 && !expired) {
         return publicInstances;
     } else {
-        publicInstances = await loadInstances();
+        let loaded: Record<string, string>;
+        try {
+            loaded = await loadInstances();
+        } catch (e) {
+            console.error(`getInstances: ${e}`);
+            // Serve a stale list if we have one, otherwise let the caller deal with it.
+            if (Object.keys(publicInstances).length !== 0)
+                return publicInstances;
+            throw e;
+        }
+        publicInstances = loaded;
         instancesUpdated = now;
         localStorage.setItem(INSTANCES_KEY, JSON.stringify(publicInstances));
         localStorage.setItem(UPDATED_KEY, instancesUpdated.toString());
@@ -45,33 +83,67 @@ export async function getInstances(): Promise<Record<string, string>> {
     }
 }
 
-/** Load the public instances list from the GitHub repository. */
-async function loadInstances(): Promise<Record<string, string>> {
+/** Load the public instances list from the GitHub repository. Rejects if it can't be loaded. */
+function loadInstances(): Promise<Record<string, string>> {
     const options = {
         method: "GET",
         headers: { "Content-Type": "application/json" },
     } as const;
 
-    return new Promise((resolve) => {
-        const gm_xmlHttpRequest = (typeof GM !== "undefined" ? GM?.xmlHttpRequest : null) ||
-            (typeof GM_xmlhttpRequest !== "undefined" ? GM_xmlhttpRequest : null);
+    return new Promise((resolve, reject) => {
+        const gm_xmlHttpRequest =
+            (typeof GM !== "undefined" ? GM?.xmlHttpRequest : null) ||
+            (typeof GM_xmlhttpRequest !== "undefined"
+                ? GM_xmlhttpRequest
+                : null);
 
         if (gm_xmlHttpRequest) {
             gm_xmlHttpRequest({
                 ...options,
                 nocache: true,
+                timeout: 15000,
                 url: INSTANCES_JSON_URL,
-                onload: (response) => resolve(JSON.parse(response.responseText)),
+                onload: (response) => {
+                    try {
+                        if (response.status < 200 || response.status >= 300) {
+                            throw new Error(`HTTP ${response.status}`);
+                        }
+                        resolve(JSON.parse(response.responseText));
+                    } catch (e) {
+                        reject(e);
+                    }
+                },
+                onerror: () =>
+                    reject(
+                        new Error(
+                            "Unable to load instances.json: request failed",
+                        ),
+                    ),
+                ontimeout: () =>
+                    reject(
+                        new Error(
+                            "Unable to load instances.json: request timed out",
+                        ),
+                    ),
+                onabort: () =>
+                    reject(
+                        new Error(
+                            "Unable to load instances.json: request aborted",
+                        ),
+                    ),
             });
         } else if (process.env.NODE_ENV === "development") {
             fetch("/instances.json", { cache: "no-cache", ...options })
-                .then(async (response) => resolve(await response.json()));
+                .then((response) => response.json())
+                .then(resolve, reject);
         } else {
-            throw new Error(
-                "Unable to load instances.json. Is the script running in a userscript manager?",
+            reject(
+                new Error(
+                    "Unable to load instances.json. Is the script running in a userscript manager?",
+                ),
             );
         }
-    }).then((instances) => instances as Record<string, string>);
+    });
 }
 
 /** Clear the saved instances */

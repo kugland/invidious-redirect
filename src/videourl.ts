@@ -1,21 +1,29 @@
 /** A YouTube video URL in the form `/watch?v=ID` or `/shorts/ID`. */
 export type VideoUrl = string;
 
+/** Get the first segment of a path, decoded (`"abc/"` and `"abc/def"` both give `"abc"`). */
+function pathSegment(path: string): string {
+    return decodeURIComponent(path.split("/")[0]);
+}
+
 /** Get the video ID from a YouTube URL in the form `/watch?v=ID` or `/shorts/ID`. */
 export function getVideoId(url: string): string {
     try {
-        const baseUrl = process.env.NODE_ENV === "production" ? window.location.origin : "https://www.youtube.com";
+        const baseUrl =
+            process.env.NODE_ENV === "production"
+                ? window.location.origin
+                : "https://www.youtube.com";
         const urlObj = new URL(url, baseUrl);
 
         let videoId: string | null = null;
         if (urlObj.pathname === "/watch") {
             videoId = urlObj.searchParams.get("v");
         } else if (urlObj.pathname.startsWith("/shorts/")) {
-            videoId = urlObj.pathname.slice(8);
+            videoId = pathSegment(urlObj.pathname.slice(8));
         } else if (urlObj.pathname.startsWith("/live/")) {
-            videoId = urlObj.pathname.slice(6);
+            videoId = pathSegment(urlObj.pathname.slice(6));
         } else if (urlObj.hostname === "youtu.be") {
-            videoId = urlObj.pathname.slice(1);
+            videoId = pathSegment(urlObj.pathname.slice(1));
         }
         if (videoId) {
             return videoId;

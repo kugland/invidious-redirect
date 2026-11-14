@@ -20,8 +20,19 @@
       imports = [inputs.devshell.flakeModule];
       perSystem = {pkgs, ...}: {
         devshells.default = {
+          env = [
+            {
+              name = "CHROMIUM_PATH";
+              value = "${pkgs.chromium}/bin/chromium";
+            }
+            {
+              name = "PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD";
+              value = "1";
+            }
+          ];
           packages = with pkgs; [
             alejandra
+            chromium
             curl
             dart-sass
             deno

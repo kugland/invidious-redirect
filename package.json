@@ -1,6 +1,10 @@
 {
-  "devDependencies": {
-    "@types/node": "^26.0.0",
-    "@types/tampermonkey": "^5.0.2"
-  }
+    "devDependencies": {
+        "@types/node": "^26.0.0",
+        "@types/tampermonkey": "^5.0.2",
+        "playwright-core": "^1.65.1"
+    },
+    "scripts": {
+        "test": "node --test test/*.test.mjs"
+    }
 }

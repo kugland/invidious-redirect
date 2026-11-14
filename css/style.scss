@@ -10,11 +10,14 @@
     border-radius: 50%;
     box-shadow: 0px 0px 3px black;
     opacity: 0.5;
-    &:hover { opacity: 1 !important; }
+    &:hover {
+        opacity: 1 !important;
+    }
 }
 
 #invidious-instance-container {
-    &, & * {
+    &,
+    & * {
         font-family: mono;
         font-size: 12px;
         box-sizing: border-box;
@@ -30,21 +33,27 @@
     place-content: center;
     z-index: 99999;
     overflow-y: auto;
-    >div {
+    > div {
         background-color: white;
         box-shadow: 10px 10px 20px rgba(0, 0, 0, 0.5);
         border-radius: 5px;
         user-select: none;
     }
-    header, footer { background-color: #eee; }
+    header,
+    footer {
+        background-color: #eee;
+    }
     header {
         border-radius: 5px 5px 0 0;
         display: grid;
-        grid-template: "title refresh close" auto
-                       "rateme rateme rateme" / 1fr auto auto;
+        grid-template:
+            "title refresh close" auto
+            "rateme rateme rateme" / 1fr auto auto;
         align-items: center;
         border-bottom: 1px solid #ccc;
-        >span { padding-left: 10px; }
+        > span {
+            padding-left: 10px;
+        }
     }
     footer {
         border-radius: 0 0 5px 5px;
@@ -65,8 +74,13 @@
             border-radius: 5px;
             cursor: pointer;
             background-color: #eee;
-            &:hover, &:focus { background-color: #ddd; }
-            &:active { background-color: #ccc; }
+            &:hover,
+            &:focus {
+                background-color: #ddd;
+            }
+            &:active {
+                background-color: #ccc;
+            }
         }
     }
     table {
@@ -89,7 +103,9 @@
         }
     }
     tr {
-        &:hover td { background-color: #eee; }
+        &:hover td {
+            background-color: #eee;
+        }
     }
     .input-helper {
         opacity: 0;
@@ -127,12 +143,16 @@
         bottom: 30px;
     }
 
-    .refresh, .close {
+    .refresh,
+    .close {
         cursor: pointer;
         color: black;
         text-decoration: none;
         font-size: 20px;
-        &:hover, &:focus { font-weight: bold; }
+        &:hover,
+        &:focus {
+            font-weight: bold;
+        }
         padding: 5px 10px;
         border-top-right-radius: 5px;
         &:hover {
@@ -158,7 +178,8 @@
         }
         color: black;
         text-decoration: none;
-        &:hover, &:focus {
+        &:hover,
+        &:focus {
             font-weight: bold;
             background-color: #ccc;
         }

@@ -16,7 +16,9 @@ onload(() => {
         document.head.appendChild(styles);
     }
 
-    const button = element(`<img id="set-invidious-url" src="${buttonImg}" tabindex="-1">`);
+    const button = element(
+        `<img id="set-invidious-url" src="${buttonImg}" tabindex="-1">`,
+    );
     button.addEventListener("click", () => showDialog());
     document.body.appendChild(button);
 
