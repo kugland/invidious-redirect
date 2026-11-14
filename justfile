@@ -60,9 +60,9 @@ test *args:
     #!/usr/bin/env bash
     set -eu -o pipefail
     # Single test entrypoint (`npm test` delegates here).
-    # esbuild and chromium (CHROMIUM_PATH) come from the Nix dev shell; playwright-core from npm.
+    # esbuild and chromium (CHROMIUM_PATH) come from the Nix test shell; playwright-core from npm.
     if ! command -v esbuild >/dev/null 2>&1 || [[ -z "${CHROMIUM_PATH:-}" ]]; then
-        echo "error: esbuild/CHROMIUM_PATH not found; run the tests inside the Nix dev shell (\`nix develop\`)." >&2
+        echo "error: esbuild/CHROMIUM_PATH not found; run the tests inside the Nix test shell (\`nix develop .#test\`)." >&2
         exit 1
     fi
     [[ -d node_modules/playwright-core ]] || npm ci

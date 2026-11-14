@@ -18,8 +18,24 @@
         "aarch64-darwin"
       ];
       imports = [inputs.devshell.flakeModule];
-      perSystem = {pkgs, ...}: {
-        devshells.default = {
+      perSystem = {pkgs, ...}: let
+        basePackages = with pkgs; [
+          alejandra
+          curl
+          dart-sass
+          deno
+          esbuild
+          jq
+          just
+          moreutils
+          nodejs
+        ];
+      in {
+        # Light shell for building and day-to-day development.
+        devshells.default.packages = basePackages;
+
+        # Adds Chromium for the Playwright end-to-end tests (`nix develop .#test`).
+        devshells.test = {
           env = [
             {
               name = "CHROMIUM_PATH";
@@ -30,18 +46,7 @@
               value = "1";
             }
           ];
-          packages = with pkgs; [
-            alejandra
-            chromium
-            curl
-            dart-sass
-            deno
-            esbuild
-            jq
-            just
-            moreutils
-            nodejs
-          ];
+          packages = basePackages ++ [pkgs.chromium];
         };
       };
     };

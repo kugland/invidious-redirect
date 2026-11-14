@@ -37,3 +37,8 @@ URL.
 
 This script is released under the MIT License. See the [LICENSE](https://raw.githubusercontent.com/kugland/invidious-redirect/master/LICENSE) file
 for details.
+
+## Development
+
+- `nix develop` gives a light shell for building (`just build`).
+- `nix develop .#test` adds Chromium for the end-to-end tests (`just test` or `npm test`).
