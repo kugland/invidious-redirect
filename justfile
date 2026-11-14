@@ -60,7 +60,9 @@ update-instances:
     #!/usr/bin/env bash
     set -eu -o pipefail
     curl -sSL 'https://api.invidious.io/instances.json?pretty=0' \
-        | jq -S 'map(select(.[0] | (contains(".onion") or contains("i2p") or endswith(".ygg")) | not))
+        | jq -S 'map(select(.[0] | (contains(".onion") or contains("i2p") or endswith(".ygg")
+                                    # inv-ygg.nadeko.net only resolves to an Yggdrasil address.
+                                    or . == "inv-ygg.nadeko.net") | not))
                     | map({ (.[0]): (.[1].region + " " + .[1].flag) })
                     | add' \
         > instances.json
