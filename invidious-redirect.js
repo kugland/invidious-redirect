@@ -137,6 +137,9 @@
     };
     return new Promise((resolve, reject) => {
       const gm_xmlHttpRequest = (typeof GM !== "undefined" ? GM?.xmlHttpRequest : null) || (typeof GM_xmlhttpRequest !== "undefined" ? GM_xmlhttpRequest : null);
+      const error = (msg) => () => {
+        reject(new Error(`Unable to load instances.json: ${msg}`));
+      };
       if (gm_xmlHttpRequest) {
         gm_xmlHttpRequest({
           ...options,
@@ -153,21 +156,9 @@
               reject(e);
             }
           },
-          onerror: () => reject(
-            new Error(
-              "Unable to load instances.json: request failed"
-            )
-          ),
-          ontimeout: () => reject(
-            new Error(
-              "Unable to load instances.json: request timed out"
-            )
-          ),
-          onabort: () => reject(
-            new Error(
-              "Unable to load instances.json: request aborted"
-            )
-          )
+          onerror: error("request failed"),
+          ontimeout: error("request timed out"),
+          onabort: error("request aborted")
         });
       } else if (false) {
         fetch("/instances.json", { cache: "no-cache", ...options }).then((response) => response.json()).then(resolve, reject);

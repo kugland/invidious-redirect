@@ -155,6 +155,10 @@ function loadInstances(): Promise<unknown> {
                 ? GM_xmlhttpRequest
                 : null);
 
+        const error = (msg: string) => () => {
+            reject(new Error(`Unable to load instances.json: ${msg}`));
+        };
+
         if (gm_xmlHttpRequest) {
             gm_xmlHttpRequest({
                 ...options,
@@ -171,24 +175,9 @@ function loadInstances(): Promise<unknown> {
                         reject(e);
                     }
                 },
-                onerror: () =>
-                    reject(
-                        new Error(
-                            "Unable to load instances.json: request failed",
-                        ),
-                    ),
-                ontimeout: () =>
-                    reject(
-                        new Error(
-                            "Unable to load instances.json: request timed out",
-                        ),
-                    ),
-                onabort: () =>
-                    reject(
-                        new Error(
-                            "Unable to load instances.json: request aborted",
-                        ),
-                    ),
+                onerror: error("request failed"),
+                ontimeout: error("request timed out"),
+                onabort: error("request aborted"),
             });
         } else if (process.env.NODE_ENV === "development") {
             fetch("/instances.json", { cache: "no-cache", ...options })
