@@ -239,6 +239,35 @@ describe("dialog click handling", () => {
             await page.click(".close");
             assert.equal(await dialogs(page).count(), 0);
         }));
+
+    test("clicking and typing in the input works and is not swallowed", () =>
+        withPage({}, async (page) => {
+            await page.click("#set-invidious-url");
+            await page.waitForSelector("footer input");
+            await page.evaluate(() => {
+                window.__inputClick = null;
+                document
+                    .querySelector("footer input")
+                    .addEventListener("click", (e) => {
+                        window.__inputClick = e.defaultPrevented;
+                    });
+            });
+            await page.click("footer input");
+            assert.equal(
+                await page.evaluate(
+                    () => document.activeElement?.tagName === "INPUT",
+                ),
+                true,
+            );
+            assert.equal(await page.evaluate(() => window.__inputClick), false);
+            await page.fill("footer input", "");
+            await page.keyboard.type("typed.example");
+            assert.equal(
+                await page.inputValue("footer input"),
+                "typed.example",
+            );
+            assert.equal(await dialogs(page).count(), 1);
+        }));
 });
 
 describe("video ID encoding", () => {

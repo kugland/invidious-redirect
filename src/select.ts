@@ -97,16 +97,23 @@ export async function showDialog() {
                 dialog?.querySelector<HTMLInputElement>("footer input");
             if (!dialog || !input) return;
 
+            // Only act on elements we recognise; leave everything else (e.g. the input) alone.
+            const row = target.closest("tr[data-url]");
+            const isClose = target.closest(".close");
+            const isRefresh = target.closest(".refresh");
+            const isSave = target.closest("footer button");
+            if (!isClose && !isRefresh && !isSave && !row) return;
+
             event.preventDefault();
             event.stopPropagation();
 
-            if (target.closest(".close")) {
+            if (isClose) {
                 dialog.remove();
-            } else if (target.closest(".refresh")) {
+            } else if (isRefresh) {
                 clearInstances();
                 dialog.remove();
                 showDialog();
-            } else if (target.closest("footer button")) {
+            } else if (isSave) {
                 if (isValidInstanceUrl(input.value)) {
                     setInstanceUrl(input.value);
                     dialog.remove();
@@ -114,9 +121,7 @@ export async function showDialog() {
                     alert("Invalid URL");
                 }
             } else {
-                const url = target
-                    .closest("tr[data-url]")
-                    ?.getAttribute("data-url");
+                const url = row?.getAttribute("data-url");
                 if (url) {
                     input.value = url.replace(/^https:\/\//, "");
                 }

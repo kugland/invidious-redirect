@@ -286,15 +286,20 @@
                 );
                 const input2 = dialog2?.querySelector("footer input");
                 if (!dialog2 || !input2) return;
+                const row = target.closest("tr[data-url]");
+                const isClose = target.closest(".close");
+                const isRefresh = target.closest(".refresh");
+                const isSave = target.closest("footer button");
+                if (!isClose && !isRefresh && !isSave && !row) return;
                 event.preventDefault();
                 event.stopPropagation();
-                if (target.closest(".close")) {
+                if (isClose) {
                     dialog2.remove();
-                } else if (target.closest(".refresh")) {
+                } else if (isRefresh) {
                     clearInstances();
                     dialog2.remove();
                     showDialog();
-                } else if (target.closest("footer button")) {
+                } else if (isSave) {
                     if (isValidInstanceUrl(input2.value)) {
                         setInstanceUrl(input2.value);
                         dialog2.remove();
@@ -302,9 +307,7 @@
                         alert("Invalid URL");
                     }
                 } else {
-                    const url = target
-                        .closest("tr[data-url]")
-                        ?.getAttribute("data-url");
+                    const url = row?.getAttribute("data-url");
                     if (url) {
                         input2.value = url.replace(/^https:\/\//, "");
                     }
