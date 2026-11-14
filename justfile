@@ -82,7 +82,7 @@ fmt:
 [no-exit-message]
 shell-nix:
     #!/usr/bin/env bash
-    if which cached-nix-shell >/dev/null; then
+    if which cached-nix-shell >/dev/null 2>&1; then
         NIX_SHELL=cached-nix-shell
     else
         NIX_SHELL=nix-shell
