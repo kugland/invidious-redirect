@@ -1,8 +1,8 @@
 // ==UserScript==
 // @name        Redirect to Invidious
-// @author      André Kugland
+// @author      cryoutux
 // @description Redirects YouTube videos to an Invidious instance.
-// @namespace   https://github.com/kugland
+// @namespace   https://github.com/croytux
 // @license     MIT
 // @version     0.3.5
 // @match       https://www.youtube.com/*
@@ -18,8 +18,6 @@
 // @updateURL   https://update.greasyfork.org/scripts/477967/Redirect%20to%20Invidious.meta.js
 // ==/UserScript==
 
-/* This script is transpiled from TypeScript, that’s why it looks a bit weird. For the original
-   source code, see https://github.com/kugland/invidious-redirect/. */
 (() => {
   // src/domhelper.ts
   function onload(callback) {
@@ -37,7 +35,7 @@
 
   // src/config.ts
   var DEFAULT_INSTANCE_URL = "https://inv.nadeko.net";
-  var INSTANCES_JSON_URL = "https://raw.githubusercontent.com/kugland/invidious-redirect/master/instances.json";
+  var INSTANCES_JSON_URL = "https://raw.githubusercontent.com/cryotux/invidious-redirect/refs/heads/master/instances.json";
   var INSTANCE_URL_KEY = "invidious-redirect--instance";
   var INSTANCES_KEY = "invidious-redirect--public-instances";
   var UPDATED_KEY = "invidious-redirect--public-instances-updated";

@@ -1,39 +1,18 @@
 # Invidious Redirect
 
-![Greasy Fork Version](https://img.shields.io/greasyfork/v/477967-redirect-to-invidious)
-![Greasy Fork Downloads](https://img.shields.io/greasyfork/dt/477967-redirect-to-invidious)
-![Greasy Fork Rating](https://img.shields.io/greasyfork/rating-count/477967-redirect-to-invidious)
-![Greasy Fork License](https://img.shields.io/greasyfork/l/477967-redirect-to-invidious)
+This is a maintained fork of [Kugland’s Invidious Redirect](https://github.com/kugland/invidious-redirect). It redirects YouTube videos to an Invidious instance. This fork includes fixes; see the repository’s commit history for the changes.
 
-This userscript redirects YouTube videos to an Invidious instance.
-
-**GitHub page:**
-[https://github.com/kugland/invidious-redirect](https://github.com/kugland/invidious-redirect)
-
-**Greasy Fork page:**
-[https://greasyfork.org/scripts/477967-redirect-to-invidious](https://greasyfork.org/scripts/477967-redirect-to-invidious)
+**Fork:**  
+[https://github.com/cryotux/invidious-redirect](https://github.com/cryotux/invidious-redirect)
 
 ## Usage
 
-To use this script, you'll need a userscript manager like Tampermonkey or
-Greasemonkey. You can install it from its page at
-[GreasyFork](https://greasyfork.org/scripts/477967-redirect-to-invidious), or by
-copying the contents of
-[invidious-redirect.js](https://raw.githubusercontent.com/kugland/invidious-redirect/master/invidious-redirect.js)
-into a new userscript.
+You’ll need a userscript manager, such as Tampermonkey, Violentmonkey, or Greasemonkey. Install the userscript from this repository, or copy the contents of `invidious-redirect.js` into a new script in your userscript manager.
 
-Once the script is installed, it will automatically redirect YouTube videos to
-your Invidious instance when you click on a YouTube link. By default, the script
-is configured to redirect to `https://inv.nadeko.net`, but you can change
-this by clicking on the Invidious icon at the bottom right corner of YouTube main
-page.
+Once installed, the script redirects YouTube videos to an Invidious instance when you open them. By default, it uses `https://inv.nadeko.net`. To change the instance, click the Invidious icon at the bottom-right corner of YouTube.
 
-If you want to use an instance that is not listed, you can just enter it manually.
-In the instance URL dialog, the `https://` is implied, so, for HTTPS instances you
-can just enter the domain name, but for HTTP instances, you need to enter the full
-URL.
+To use an instance that isn’t listed, enter its address in the instance dialog. For HTTPS, enter the domain name; for HTTP, enter the full URL, including `http://`.
 
-## License
+## Credits and license
 
-This script is released under the MIT License. See the [LICENSE](https://raw.githubusercontent.com/kugland/invidious-redirect/master/LICENSE) file
-for details.
+This is a fork of [Kugland’s Invidious Redirect](https://github.com/kugland/invidious-redirect). The original script is licensed under the MIT License. See the [LICENSE](LICENSE) file for license details.
