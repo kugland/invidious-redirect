@@ -24,9 +24,23 @@ function normalizeInstanceUrl(url: string): string {
 let instanceUrl =
     normalizeInstanceUrl(localStorage.getItem(INSTANCE_URL_KEY) || "") ||
     normalizeInstanceUrl(DEFAULT_INSTANCE_URL);
-let publicInstances = JSON.parse(
-    localStorage.getItem(INSTANCES_KEY) || "{}",
-) as Record<string, string>;
+
+/** Check that a parsed JSON value is a plain object (not null, an array or a primitive). */
+function isPlainObject(value: unknown): value is Record<string, string> {
+    return typeof value === "object" && value !== null && !Array.isArray(value);
+}
+
+/** Read the cached instances list, ignoring anything that is not a plain object. */
+function readCachedInstances(): Record<string, string> {
+    try {
+        const cached = JSON.parse(localStorage.getItem(INSTANCES_KEY) || "{}");
+        return isPlainObject(cached) ? cached : {};
+    } catch (e) {
+        return {};
+    }
+}
+
+let publicInstances = readCachedInstances();
 let instancesUpdated = parseInt(localStorage.getItem(UPDATED_KEY) || "0");
 let instancesFailedAt = parseInt(localStorage.getItem(ATTEMPTED_KEY) || "0");
 
@@ -73,6 +87,9 @@ export async function getInstances(): Promise<Record<string, string>> {
         let loaded: Record<string, string>;
         try {
             loaded = await loadInstances();
+            if (!isPlainObject(loaded)) {
+                throw new Error("Invalid instances.json: not an object");
+            }
         } catch (e) {
             console.error(`getInstances: ${e}`);
             // Serve a stale list if we have one, otherwise let the caller deal with it.

@@ -81,6 +81,49 @@ describe("instance list loading", () => {
         }));
 });
 
+describe("instances JSON validation", () => {
+    for (const [name, body] of [
+        ["null", null],
+        ["an array", ["a.example", "b.example"]],
+        ["a string", "a.example"],
+    ]) {
+        test(`${name} body is rejected and not cached`, () =>
+            withPage({ instances: body }, async (page) => {
+                await page.click("#set-invidious-url");
+                await dialogs(page).waitFor({ timeout: 2000 });
+                assert.equal(await page.locator("table tr").count(), 0);
+                assert.equal(
+                    await page.evaluate(() =>
+                        localStorage.getItem(
+                            "invidious-redirect--public-instances",
+                        ),
+                    ),
+                    null,
+                );
+            }));
+    }
+
+    for (const bad of ["null", "[1,2]", '"str"', "{not json"]) {
+        test(`a bad cached value ${bad} is ignored and refetched`, () =>
+            withPage({}, async (page) => {
+                await page.evaluate((value) => {
+                    localStorage.setItem(
+                        "invidious-redirect--public-instances",
+                        value,
+                    );
+                    localStorage.setItem(
+                        "invidious-redirect--public-instances-updated",
+                        String(Date.now()),
+                    );
+                }, bad);
+                await page.reload();
+                await page.click("#set-invidious-url");
+                await page.locator("tr", { hasText: "a.example" }).waitFor();
+                assert.equal(await gmCalls(page), 1);
+            }));
+    }
+});
+
 describe("stale instance list", () => {
     test("a failed refresh of an expired list is not retried on every dialog open", () =>
         withPage({ mode: "error", delay: 3000 }, async (page) => {

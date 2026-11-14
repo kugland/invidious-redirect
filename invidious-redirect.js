@@ -53,9 +53,22 @@
     var instanceUrl =
         normalizeInstanceUrl(localStorage.getItem(INSTANCE_URL_KEY) || "") ||
         normalizeInstanceUrl(DEFAULT_INSTANCE_URL);
-    var publicInstances = JSON.parse(
-        localStorage.getItem(INSTANCES_KEY) || "{}",
-    );
+    function isPlainObject(value) {
+        return (
+            typeof value === "object" && value !== null && !Array.isArray(value)
+        );
+    }
+    function readCachedInstances() {
+        try {
+            const cached = JSON.parse(
+                localStorage.getItem(INSTANCES_KEY) || "{}",
+            );
+            return isPlainObject(cached) ? cached : {};
+        } catch (e) {
+            return {};
+        }
+    }
+    var publicInstances = readCachedInstances();
     var instancesUpdated = parseInt(localStorage.getItem(UPDATED_KEY) || "0");
     var instancesFailedAt = parseInt(
         localStorage.getItem(ATTEMPTED_KEY) || "0",
@@ -97,6 +110,9 @@
             let loaded;
             try {
                 loaded = await loadInstances();
+                if (!isPlainObject(loaded)) {
+                    throw new Error("Invalid instances.json: not an object");
+                }
             } catch (e) {
                 if (Object.keys(publicInstances).length !== 0) {
                     instancesFailedAt = now;
