@@ -6,6 +6,8 @@
         "skipLibCheck": true /* Skip type checking all .d.ts files. */,
         "strict": false /* Enable all strict type-checking options. */,
         "strictNullChecks": true /* Enable strict null checks. */,
-        "target": "ES2018" /* Set the JavaScript language version for emitted JavaScript and include compatible library declarations. */
-    }
+        "target": "ES2018" /* Set the JavaScript language version for emitted JavaScript and include compatible library declarations. */,
+        "types": ["node", "tampermonkey"] /* Type definitions to load: Node (process) and Tampermonkey (GM_* APIs). */
+    },
+    "include": ["src"]
 }
