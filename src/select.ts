@@ -35,7 +35,7 @@ export async function showDialog() {
     const tableHtml = Object.entries(instances)
         .map(([uri, region]) => [
             escapeHtml(uri),
-            escapeHtml(String(region).toLowerCase()),
+            escapeHtml(region.toLowerCase()),
         ])
         .map(
             ([uri, region]) => `

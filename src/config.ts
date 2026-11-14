@@ -28,16 +28,38 @@ let instanceUrl = isValidInstanceUrl(storedInstanceUrl)
     ? storedInstanceUrl
     : normalizeInstanceUrl(DEFAULT_INSTANCE_URL);
 
-/** Check that a parsed JSON value is a plain object (not null, an array or a primitive). */
-function isPlainObject(value: unknown): value is Record<string, string> {
-    return typeof value === "object" && value !== null && !Array.isArray(value);
+/**
+ * Validate and sanitize a parsed instances list. This is the single place where the shape of
+ * the list is checked, so consumers can rely on the result: a non-empty `{ host: region }`
+ * object whose keys are bare `host[:port]` values and whose values are strings. Entries that
+ * don't fit are dropped. Throws if the value is not an object or nothing valid is left.
+ */
+export function parseInstances(value: unknown): Record<string, string> {
+    if (typeof value !== "object" || value === null || Array.isArray(value)) {
+        throw new Error("Invalid instances list: not an object");
+    }
+    const instances: Record<string, string> = {};
+    for (const [host, region] of Object.entries(value)) {
+        if (
+            typeof region === "string" &&
+            !/^https?:\/\//i.test(host) &&
+            isValidInstanceUrl(host)
+        ) {
+            instances[host] = region;
+        }
+    }
+    if (Object.keys(instances).length === 0) {
+        throw new Error("Invalid instances list: no valid entries");
+    }
+    return instances;
 }
 
-/** Read the cached instances list, ignoring anything that is not a plain object. */
+/** Read the cached instances list, ignoring anything that is not valid. */
 function readCachedInstances(): Record<string, string> {
     try {
-        const cached = JSON.parse(localStorage.getItem(INSTANCES_KEY) || "{}");
-        return isPlainObject(cached) ? cached : {};
+        return parseInstances(
+            JSON.parse(localStorage.getItem(INSTANCES_KEY) || "null"),
+        );
     } catch (e) {
         return {};
     }
@@ -97,10 +119,7 @@ export async function getInstances(): Promise<Record<string, string>> {
     } else {
         let loaded: Record<string, string>;
         try {
-            loaded = await loadInstances();
-            if (!isPlainObject(loaded)) {
-                throw new Error("Invalid instances.json: not an object");
-            }
+            loaded = parseInstances(await loadInstances());
         } catch (e) {
             console.error(`getInstances: ${e}`);
             // Serve a stale list if we have one, otherwise let the caller deal with it.
@@ -123,7 +142,7 @@ export async function getInstances(): Promise<Record<string, string>> {
 }
 
 /** Load the public instances list from the GitHub repository. Rejects if it can't be loaded. */
-function loadInstances(): Promise<Record<string, string>> {
+function loadInstances(): Promise<unknown> {
     const options = {
         method: "GET",
         headers: { "Content-Type": "application/json" },

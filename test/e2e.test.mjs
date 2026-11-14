@@ -379,7 +379,7 @@ describe("dialog robustness", () => {
         withPage(
             {
                 instances: {
-                    [`x.example"><img src=x onerror="window.__xss=1">`]: `<img src=x onerror="window.__xss=2">`,
+                    "x.example": `<img src=x onerror="window.__xss=2">`,
                 },
             },
             async (page) => {
@@ -397,10 +397,49 @@ describe("dialog robustness", () => {
                     /<img/,
                 );
                 await page.locator("table tr td").first().click();
-                assert.match(
+                assert.equal(
                     await page.inputValue("footer input"),
-                    /^x\.example"><img/,
+                    "x.example",
                 );
+            },
+        ));
+
+    test("invalid instance entries are dropped, valid ones kept", () =>
+        withPage(
+            {
+                instances: {
+                    "ok.example": "US",
+                    [`x.example"><img src=x onerror="window.__xss=1">`]: "DE",
+                    "https://scheme.example": "FR",
+                    "path.example/watch": "FR",
+                    "number.example": 5,
+                    "null.example": null,
+                },
+            },
+            async (page) => {
+                await page.click("#set-invidious-url");
+                await page.waitForSelector("table tr");
+                await page.waitForTimeout(300);
+                assert.equal(
+                    await page.evaluate(() => window.__xss),
+                    undefined,
+                );
+                assert.deepEqual(
+                    await page
+                        .locator("table tr td:first-child")
+                        .allInnerTexts(),
+                    ["ok.example"],
+                );
+            },
+        ));
+
+    test("a list with no valid entries is treated as a failed load", () =>
+        withPage(
+            { instances: { "https://only-bad.example": "US" } },
+            async (page) => {
+                await page.click("#set-invidious-url");
+                await page.waitForSelector(".load-error");
+                assert.equal(await page.locator("table tr").count(), 0);
             },
         ));
 
