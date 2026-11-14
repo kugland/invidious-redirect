@@ -42,3 +42,4 @@ for details.
 
 - `nix develop` gives a light shell for building (`just build`).
 - `nix develop .#test` adds Chromium for the end-to-end tests (`just test` or `npm test`).
+- Formatting uses Prettier (config in `.prettierrc`, matching `.editorconfig`): run `, prettier --write .` before committing.
