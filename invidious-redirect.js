@@ -42,6 +42,8 @@
     var INSTANCE_URL_KEY = "invidious-redirect--instance";
     var INSTANCES_KEY = "invidious-redirect--public-instances";
     var UPDATED_KEY = "invidious-redirect--public-instances-updated";
+    var ATTEMPTED_KEY = "invidious-redirect--public-instances-attempted";
+    var RETRY_BACKOFF_MS = 36e5;
     function normalizeInstanceUrl(url) {
         const trimmed = url.trim();
         const scheme = /^http:\/\//i.test(trimmed) ? "http://" : "";
@@ -55,6 +57,9 @@
         localStorage.getItem(INSTANCES_KEY) || "{}",
     );
     var instancesUpdated = parseInt(localStorage.getItem(UPDATED_KEY) || "0");
+    var instancesFailedAt = parseInt(
+        localStorage.getItem(ATTEMPTED_KEY) || "0",
+    );
     function getInstanceUrl() {
         return instanceUrl;
     }
@@ -82,19 +87,28 @@
     async function getInstances() {
         const now = Date.now();
         const expired = now - instancesUpdated > 864e5;
-        if (Object.keys(publicInstances).length !== 0 && !expired) {
+        const backingOff = now - instancesFailedAt < RETRY_BACKOFF_MS;
+        if (
+            Object.keys(publicInstances).length !== 0 &&
+            (!expired || backingOff)
+        ) {
             return publicInstances;
         } else {
             let loaded;
             try {
                 loaded = await loadInstances();
             } catch (e) {
-                if (Object.keys(publicInstances).length !== 0)
+                if (Object.keys(publicInstances).length !== 0) {
+                    instancesFailedAt = now;
+                    localStorage.setItem(ATTEMPTED_KEY, now.toString());
                     return publicInstances;
+                }
                 throw e;
             }
             publicInstances = loaded;
             instancesUpdated = now;
+            instancesFailedAt = 0;
+            localStorage.removeItem(ATTEMPTED_KEY);
             localStorage.setItem(
                 INSTANCES_KEY,
                 JSON.stringify(publicInstances),
@@ -168,6 +182,8 @@
     function clearInstances() {
         publicInstances = {};
         instancesUpdated = 0;
+        instancesFailedAt = 0;
+        localStorage.removeItem(ATTEMPTED_KEY);
         localStorage.removeItem(INSTANCES_KEY);
         localStorage.removeItem(UPDATED_KEY);
     }
