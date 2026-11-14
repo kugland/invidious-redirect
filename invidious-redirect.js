@@ -50,9 +50,12 @@
         const rest = trimmed.replace(/^https?:\/\//i, "").replace(/\/+$/, "");
         return rest ? scheme + rest : "";
     }
-    var instanceUrl =
-        normalizeInstanceUrl(localStorage.getItem(INSTANCE_URL_KEY) || "") ||
-        normalizeInstanceUrl(DEFAULT_INSTANCE_URL);
+    var storedInstanceUrl = normalizeInstanceUrl(
+        localStorage.getItem(INSTANCE_URL_KEY) || "",
+    );
+    var instanceUrl = isValidInstanceUrl(storedInstanceUrl)
+        ? storedInstanceUrl
+        : normalizeInstanceUrl(DEFAULT_INSTANCE_URL);
     function isPlainObject(value) {
         return (
             typeof value === "object" && value !== null && !Array.isArray(value)
@@ -85,9 +88,14 @@
         return toFullUrl(instanceUrl);
     }
     function isValidInstanceUrl(url) {
+        const normalized = normalizeInstanceUrl(url);
+        if (!/^(http:\/\/)?[^\s/?#@\\]+$/i.test(normalized)) return false;
         try {
+            const parsed = new URL(toFullUrl(normalized));
             return (
-                new URL(toFullUrl(normalizeInstanceUrl(url))).hostname !== ""
+                parsed.hostname !== "" &&
+                parsed.username === "" &&
+                parsed.password === ""
             );
         } catch (e) {
             return false;

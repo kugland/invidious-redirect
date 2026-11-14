@@ -57,6 +57,59 @@ describe("instance URL normalization", () => {
     }
 });
 
+describe("instance URL validation", () => {
+    for (const typed of [
+        "inv.example/watch",
+        "inv.example/watch/",
+        "inv.example?x=1",
+        "inv.example#frag",
+        "user@evil.example",
+        "user:pw@evil.example",
+        "https://inv.example/a/b",
+        "inv.example\\evil.example",
+    ]) {
+        test(`${JSON.stringify(typed)} is rejected, the user is told, nothing is saved`, () =>
+            withPage({}, async (page, state) => {
+                const messages = [];
+                page.on("dialog", (d) => {
+                    messages.push(d.message());
+                    d.accept();
+                });
+                await saveInstance(page, typed);
+                await page.waitForTimeout(200);
+                assert.equal(messages.length, 1);
+                assert.equal(await dialogs(page).count(), 1); // still open
+                assert.equal(
+                    await page.evaluate(() =>
+                        localStorage.getItem("invidious-redirect--instance"),
+                    ),
+                    null,
+                );
+            }));
+    }
+
+    test("host:port is accepted", () =>
+        withPage({}, async (page, state) => {
+            await saveInstance(page, "foo.example:8080");
+            await page.goto(HOME);
+            const url = await clickAndGetNavigation(page, state, "#watch");
+            assert.equal(url, "https://foo.example:8080/watch?v=abc");
+        }));
+
+    test("an invalid value already in storage falls back to the default", () =>
+        withPage({}, async (page, state) => {
+            await page.evaluate(() =>
+                localStorage.setItem(
+                    "invidious-redirect--instance",
+                    "user@evil.example",
+                ),
+            );
+            await page.goto(HOME);
+            const url = await clickAndGetNavigation(page, state, "#watch");
+            assert.equal(url, "https://inv.nadeko.net/watch?v=abc");
+        }));
+});
+
 describe("instance list loading", () => {
     for (const mode of ["html404", "error"]) {
         test(`the dialog still opens when loading fails (${mode})`, () =>

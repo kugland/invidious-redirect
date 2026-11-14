@@ -21,9 +21,12 @@ function normalizeInstanceUrl(url: string): string {
     return rest ? scheme + rest : "";
 }
 
-let instanceUrl =
-    normalizeInstanceUrl(localStorage.getItem(INSTANCE_URL_KEY) || "") ||
-    normalizeInstanceUrl(DEFAULT_INSTANCE_URL);
+const storedInstanceUrl = normalizeInstanceUrl(
+    localStorage.getItem(INSTANCE_URL_KEY) || "",
+);
+let instanceUrl = isValidInstanceUrl(storedInstanceUrl)
+    ? storedInstanceUrl
+    : normalizeInstanceUrl(DEFAULT_INSTANCE_URL);
 
 /** Check that a parsed JSON value is a plain object (not null, an array or a primitive). */
 function isPlainObject(value: unknown): value is Record<string, string> {
@@ -63,8 +66,16 @@ export function getFullInstanceUrl() {
 
 /** Check whether the user-provided string is a usable instance URL. */
 export function isValidInstanceUrl(url: string): boolean {
+    const normalized = normalizeInstanceUrl(url);
+    // Only host[:port] is allowed: no path, query, fragment or userinfo.
+    if (!/^(http:\/\/)?[^\s/?#@\\]+$/i.test(normalized)) return false;
     try {
-        return new URL(toFullUrl(normalizeInstanceUrl(url))).hostname !== "";
+        const parsed = new URL(toFullUrl(normalized));
+        return (
+            parsed.hostname !== "" &&
+            parsed.username === "" &&
+            parsed.password === ""
+        );
     } catch (e) {
         return false;
     }
