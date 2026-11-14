@@ -60,7 +60,7 @@ update-instances:
     #!/usr/bin/env bash
     set -eu -o pipefail
     curl -sSL 'https://api.invidious.io/instances.json?pretty=0' \
-        | jq -S 'map(select(.[0] | (contains(".onion") or contains("i2p")) | not))
+        | jq -S 'map(select(.[0] | (contains(".onion") or contains("i2p") or endswith(".ygg")) | not))
                     | map({ (.[0]): (.[1].region + " " + .[1].flag) })
                     | add' \
         > instances.json
