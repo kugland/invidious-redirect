@@ -6,6 +6,9 @@ const INSTANCES_JSON_URL =
 const INSTANCE_URL_KEY = "invidious-redirect--instance";
 const INSTANCES_KEY = "invidious-redirect--public-instances";
 const UPDATED_KEY = "invidious-redirect--public-instances-updated";
+const ATTEMPTED_KEY = "invidious-redirect--public-instances-attempted";
+/** After a failed refresh, keep serving the stale list for this long before trying again. */
+const RETRY_BACKOFF_MS = 3600000;
 
 /**
  * Normalize an instance URL: trim whitespace and trailing slashes, and drop the `https://` scheme,
@@ -25,6 +28,7 @@ let publicInstances = JSON.parse(
     localStorage.getItem(INSTANCES_KEY) || "{}",
 ) as Record<string, string>;
 let instancesUpdated = parseInt(localStorage.getItem(UPDATED_KEY) || "0");
+let instancesFailedAt = parseInt(localStorage.getItem(ATTEMPTED_KEY) || "0");
 
 /** Get the instance URL that we should redirect to. */
 export function getInstanceUrl() {
@@ -62,7 +66,8 @@ export function setInstanceUrl(url: string) {
 export async function getInstances(): Promise<Record<string, string>> {
     const now = Date.now();
     const expired = now - instancesUpdated > 86400000;
-    if (Object.keys(publicInstances).length !== 0 && !expired) {
+    const backingOff = now - instancesFailedAt < RETRY_BACKOFF_MS;
+    if (Object.keys(publicInstances).length !== 0 && (!expired || backingOff)) {
         return publicInstances;
     } else {
         let loaded: Record<string, string>;
@@ -71,12 +76,18 @@ export async function getInstances(): Promise<Record<string, string>> {
         } catch (e) {
             console.error(`getInstances: ${e}`);
             // Serve a stale list if we have one, otherwise let the caller deal with it.
-            if (Object.keys(publicInstances).length !== 0)
+            if (Object.keys(publicInstances).length !== 0) {
+                // Remember the failure, so that we don't wait for a timeout on every call.
+                instancesFailedAt = now;
+                localStorage.setItem(ATTEMPTED_KEY, now.toString());
                 return publicInstances;
+            }
             throw e;
         }
         publicInstances = loaded;
         instancesUpdated = now;
+        instancesFailedAt = 0;
+        localStorage.removeItem(ATTEMPTED_KEY);
         localStorage.setItem(INSTANCES_KEY, JSON.stringify(publicInstances));
         localStorage.setItem(UPDATED_KEY, instancesUpdated.toString());
         return publicInstances;
@@ -150,6 +161,8 @@ function loadInstances(): Promise<Record<string, string>> {
 export function clearInstances() {
     publicInstances = {};
     instancesUpdated = 0;
+    instancesFailedAt = 0;
+    localStorage.removeItem(ATTEMPTED_KEY);
     localStorage.removeItem(INSTANCES_KEY);
     localStorage.removeItem(UPDATED_KEY);
 }

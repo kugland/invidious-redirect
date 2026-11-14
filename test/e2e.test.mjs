@@ -81,6 +81,33 @@ describe("instance list loading", () => {
         }));
 });
 
+describe("stale instance list", () => {
+    test("a failed refresh of an expired list is not retried on every dialog open", () =>
+        withPage({ mode: "error", delay: 3000 }, async (page) => {
+            // Seed a cache that is older than 24h, then reload so the script picks it up.
+            await page.evaluate(() => {
+                localStorage.setItem(
+                    "invidious-redirect--public-instances",
+                    JSON.stringify({ "stale.example": "US" }),
+                );
+                localStorage.setItem(
+                    "invidious-redirect--public-instances-updated",
+                    "1",
+                );
+            });
+            await page.reload();
+            await page.click("#set-invidious-url");
+            await dialogs(page).waitFor({ timeout: 10000 }); // first open waits for the failure
+            assert.equal(await gmCalls(page), 1);
+            await page.click(".close");
+            await page.click("#set-invidious-url");
+            // Must not wait for another (3s) failed request.
+            await dialogs(page).waitFor({ timeout: 1000 });
+            assert.equal(await gmCalls(page), 1);
+            await page.locator("tr", { hasText: "stale.example" }).waitFor();
+        }));
+});
+
 describe("dialog click handling", () => {
     test("clicking inside the rate-me link opens it", () =>
         withPage({}, async (page, state) => {
