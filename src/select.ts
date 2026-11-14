@@ -22,10 +22,12 @@ function escapeHtml(text: string): string {
 
 export async function showDialog() {
     let instances: Record<string, string> = {};
+    let loadFailed = false;
     try {
         instances = await getInstances();
     } catch (e) {
         // Still show the dialog, so that an instance can be entered manually.
+        loadFailed = true;
         console.error(`showDialog: ${e}`);
     }
 
@@ -46,6 +48,10 @@ export async function showDialog() {
         )
         .join("");
 
+    const errorHtml = loadFailed
+        ? `<div class="load-error" role="alert">Failed to load the instance list. Click the refresh icon (top right) to try again, or enter an instance below.</div>`
+        : "";
+
     const dialog = element<HTMLDivElement>(`
         <div id="${INVIDIOUS_INSTANCE_CONTAINER}" ondragstart="return false;">
             <div>
@@ -59,6 +65,7 @@ export async function showDialog() {
                         </div>
                     </a>
                 </header>
+                ${errorHtml}
                 <table>${tableHtml}</table>
                 <footer>
                     <div class="input-container">

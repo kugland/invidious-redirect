@@ -83,6 +83,14 @@
             }
         }
     }
+    .load-error {
+        padding: 10px;
+        max-width: 400px;
+        color: #900;
+        background-color: #fee;
+        border-bottom: 1px solid #ccc;
+        user-select: text;
+    }
     table {
         border-collapse: collapse;
         margin: 3px 0;

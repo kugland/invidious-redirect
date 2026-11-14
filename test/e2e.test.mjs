@@ -123,6 +123,23 @@ describe("instance list loading", () => {
             }));
     }
 
+    for (const mode of ["html404", "error"]) {
+        test(`a failed load shows an error with a refresh hint (${mode})`, () =>
+            withPage({ mode }, async (page) => {
+                await page.click("#set-invidious-url");
+                const error = page.locator(".load-error");
+                await error.waitFor({ timeout: 2000 });
+                assert.match(await error.innerText(), /failed.*refresh/i);
+            }));
+    }
+
+    test("a successful load shows no error", () =>
+        withPage({}, async (page) => {
+            await page.click("#set-invidious-url");
+            await dialogs(page).waitFor({ timeout: 2000 });
+            assert.equal(await page.locator(".load-error").count(), 0);
+        }));
+
     test("a failed refresh does not leave a failure cached", () =>
         withPage({ mode: "error" }, async (page) => {
             await page.click("#set-invidious-url");
