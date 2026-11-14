@@ -3,6 +3,7 @@ import assert from "node:assert/strict";
 import {
     buildBundle,
     clickAndGetNavigation,
+    DEFAULT_INSTANCE,
     dialogs,
     gmCalls,
     HOME,
@@ -38,7 +39,7 @@ describe("instance URL normalization", () => {
     test("the default instance redirects to a well-formed URL", () =>
         withPage({}, async (page, state) => {
             const url = await clickAndGetNavigation(page, state, "#watch");
-            assert.equal(url, "https://inv.nadeko.net/watch?v=abcdefghijk");
+            assert.equal(url, `${DEFAULT_INSTANCE}/watch?v=abcdefghijk`);
         }));
 
     for (const [typed, expected] of [
@@ -106,7 +107,7 @@ describe("instance URL validation", () => {
             );
             await page.goto(HOME);
             const url = await clickAndGetNavigation(page, state, "#watch");
-            assert.equal(url, "https://inv.nadeko.net/watch?v=abcdefghijk");
+            assert.equal(url, `${DEFAULT_INSTANCE}/watch?v=abcdefghijk`);
         }));
 });
 
@@ -307,7 +308,7 @@ describe("video ID encoding", () => {
                 state,
                 "#shorts-slash",
             );
-            assert.equal(url, "https://inv.nadeko.net/watch?v=abcdefghijk");
+            assert.equal(url, `${DEFAULT_INSTANCE}/watch?v=abcdefghijk`);
         }));
 });
 
@@ -319,7 +320,7 @@ describe("click redirection", () => {
                 state,
                 "#svg-link svg",
             );
-            assert.equal(url, "https://inv.nadeko.net/watch?v=svgvideo123");
+            assert.equal(url, `${DEFAULT_INSTANCE}/watch?v=svgvideo123`);
         }));
 
     for (const modifier of ["Control", "Meta", "Shift", "Alt"]) {
@@ -332,7 +333,7 @@ describe("click redirection", () => {
                 await tab.waitForLoadState();
                 assert.equal(
                     tab.url(),
-                    "https://inv.nadeko.net/watch?v=abcdefghijk",
+                    `${DEFAULT_INSTANCE}/watch?v=abcdefghijk`,
                 );
                 assert.equal(page.url(), HOME);
                 assert.ok(
@@ -351,10 +352,7 @@ describe("click redirection", () => {
             await page.click("#watch", { button: "middle" });
             const tab = await popup;
             await tab.waitForLoadState();
-            assert.equal(
-                tab.url(),
-                "https://inv.nadeko.net/watch?v=abcdefghijk",
-            );
+            assert.equal(tab.url(), `${DEFAULT_INSTANCE}/watch?v=abcdefghijk`);
             assert.equal(page.url(), HOME);
         }));
 

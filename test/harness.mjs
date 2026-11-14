@@ -6,6 +6,19 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 
 export const HOME = "https://www.youtube.com/";
+
+/** The userscript's default instance, read from the source so tests don't hard-code it. */
+export const DEFAULT_INSTANCE = (() => {
+    const src = readFileSync(
+        new URL("../src/config.ts", import.meta.url),
+        "utf8",
+    );
+    const match = src.match(/DEFAULT_INSTANCE_URL\s*=\s*"([^"]+)"/);
+    if (!match)
+        throw new Error("DEFAULT_INSTANCE_URL not found in src/config.ts");
+    return match[1].replace(/\/+$/, "");
+})();
+
 export const INSTANCES = { "a.example": "US 🇺🇸", "b.example": "DE 🇩🇪" };
 
 const PAGE_HTML = `
