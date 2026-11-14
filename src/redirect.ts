@@ -3,12 +3,14 @@ import { getVideoId } from "./videourl";
 
 let currentUrl = window.location.href;
 
-function tryNavigate(href: string, replace = true): boolean {
+function tryNavigate(href: string, replace = true, newTab = false): boolean {
     console.info(`tryNavigate: ${href}`);
     try {
         const url = `${getFullInstanceUrl()}/watch?v=${encodeURIComponent(getVideoId(href))}`;
         console.info(`tryNavigate: ${url}`);
-        if (replace) {
+        if (newTab) {
+            window.open(url, "_blank", "noopener");
+        } else if (replace) {
             window.location.replace(url);
         } else {
             window.location.assign(url);
@@ -23,30 +25,29 @@ function tryNavigate(href: string, replace = true): boolean {
 // When loading, try to redirect to the Invidious instance.
 tryNavigate(window.location.href, true);
 
-// Redirect on click.
-document.addEventListener(
-    "click",
-    (event: MouseEvent) => {
-        // Leave modified and non-primary clicks (e.g. Ctrl+click to open in a new tab) to the browser.
-        if (
-            event.button !== 0 ||
-            event.ctrlKey ||
-            event.metaKey ||
-            event.shiftKey ||
-            event.altKey
-        )
-            return;
+// Redirect on click. Modified clicks (Ctrl/Meta/Shift/Alt) and middle-clicks (`auxclick`) open the instance in
+// a new tab, like the browser would do natively; plain clicks navigate the current tab.
+function onClick(event: MouseEvent) {
+    const isAux = event.type === "auxclick";
+    // Only the primary button (click) and the middle button (auxclick); the right button is left alone.
+    if (event.button !== (isAux ? 1 : 0)) return;
+    const newTab =
+        isAux ||
+        event.ctrlKey ||
+        event.metaKey ||
+        event.shiftKey ||
+        event.altKey;
 
-        if (event.target instanceof Element) {
-            const href = event.target.closest("a")?.getAttribute("href");
-            if (href && tryNavigate(href, false)) {
-                event.preventDefault();
-                event.stopPropagation();
-            }
+    if (event.target instanceof Element) {
+        const href = event.target.closest("a")?.getAttribute("href");
+        if (href && tryNavigate(href, false, newTab)) {
+            event.preventDefault();
+            event.stopPropagation();
         }
-    },
-    true,
-);
+    }
+}
+document.addEventListener("click", onClick, true);
+document.addEventListener("auxclick", onClick, true);
 
 // Redirect on location change.
 setInterval(() => {

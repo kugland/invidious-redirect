@@ -277,29 +277,48 @@ describe("click redirection", () => {
         }));
 
     for (const modifier of ["Control", "Meta", "Shift", "Alt"]) {
-        test(`${modifier}+click is left to the browser`, () =>
-            withPage({}, async (page) => {
-                const navigations = [];
-                page.on("request", (request) => {
-                    if (
-                        request.isNavigationRequest() &&
-                        request.frame() === page.mainFrame()
-                    ) {
-                        navigations.push(request.url());
-                    }
-                });
+        test(`${modifier}+click opens the instance in a new tab`, () =>
+            withPage({}, async (page, state) => {
+                const popup = page.waitForEvent("popup");
+                state.navigations.length = 0;
                 await page.click("#watch", { modifiers: [modifier] });
-                await page.waitForTimeout(500);
-                // What the browser does with a modified click is up to it (new tab, download, native
-                // same-tab navigation...), but the click handler itself must not send this page
-                // straight to the instance.
-                const first = navigations[0];
+                const tab = await popup;
+                await tab.waitForLoadState();
+                assert.equal(
+                    tab.url(),
+                    "https://inv.nadeko.net/watch?v=abcdefghijk",
+                );
+                assert.equal(page.url(), HOME);
                 assert.ok(
-                    first === undefined || first.startsWith(HOME),
-                    `first navigation: ${first}`,
+                    !state.navigations.some(
+                        (u) =>
+                            u.includes("/watch?v=abcdefghijk") &&
+                            u.startsWith(HOME),
+                    ),
                 );
             }));
     }
+
+    test("middle-click opens the instance in a new tab", () =>
+        withPage({}, async (page) => {
+            const popup = page.waitForEvent("popup");
+            await page.click("#watch", { button: "middle" });
+            const tab = await popup;
+            await tab.waitForLoadState();
+            assert.equal(
+                tab.url(),
+                "https://inv.nadeko.net/watch?v=abcdefghijk",
+            );
+            assert.equal(page.url(), HOME);
+        }));
+
+    test("right-click is left untouched", () =>
+        withPage({}, async (page, state) => {
+            await page.click("#watch", { button: "right" });
+            await page.waitForTimeout(500);
+            assert.equal(state.popups, 0);
+            assert.equal(page.url(), HOME);
+        }));
 });
 
 describe("dialog robustness", () => {

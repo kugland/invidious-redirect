@@ -353,10 +353,12 @@
 
     // src/redirect.ts
     var currentUrl = window.location.href;
-    function tryNavigate(href, replace = true) {
+    function tryNavigate(href, replace = true, newTab = false) {
         try {
             const url = `${getFullInstanceUrl()}/watch?v=${encodeURIComponent(getVideoId(href))}`;
-            if (replace) {
+            if (newTab) {
+                window.open(url, "_blank", "noopener");
+            } else if (replace) {
                 window.location.replace(url);
             } else {
                 window.location.assign(url);
@@ -366,27 +368,25 @@
         return false;
     }
     tryNavigate(window.location.href, true);
-    document.addEventListener(
-        "click",
-        (event) => {
-            if (
-                event.button !== 0 ||
-                event.ctrlKey ||
-                event.metaKey ||
-                event.shiftKey ||
-                event.altKey
-            )
-                return;
-            if (event.target instanceof Element) {
-                const href = event.target.closest("a")?.getAttribute("href");
-                if (href && tryNavigate(href, false)) {
-                    event.preventDefault();
-                    event.stopPropagation();
-                }
+    function onClick(event) {
+        const isAux = event.type === "auxclick";
+        if (event.button !== (isAux ? 1 : 0)) return;
+        const newTab =
+            isAux ||
+            event.ctrlKey ||
+            event.metaKey ||
+            event.shiftKey ||
+            event.altKey;
+        if (event.target instanceof Element) {
+            const href = event.target.closest("a")?.getAttribute("href");
+            if (href && tryNavigate(href, false, newTab)) {
+                event.preventDefault();
+                event.stopPropagation();
             }
-        },
-        true,
-    );
+        }
+    }
+    document.addEventListener("click", onClick, true);
+    document.addEventListener("auxclick", onClick, true);
     setInterval(() => {
         if (window.location.href !== currentUrl) {
             currentUrl = window.location.href;
