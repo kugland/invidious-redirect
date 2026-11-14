@@ -38,14 +38,14 @@ describe("instance URL normalization", () => {
     test("the default instance redirects to a well-formed URL", () =>
         withPage({}, async (page, state) => {
             const url = await clickAndGetNavigation(page, state, "#watch");
-            assert.equal(url, "https://inv.nadeko.net/watch?v=abc");
+            assert.equal(url, "https://inv.nadeko.net/watch?v=abcdefghijk");
         }));
 
     for (const [typed, expected] of [
-        ["foo.example", "https://foo.example/watch?v=abc"],
-        ["https://foo.example", "https://foo.example/watch?v=abc"],
-        ["foo.example/", "https://foo.example/watch?v=abc"],
-        ["http://foo.example/", "http://foo.example/watch?v=abc"],
+        ["foo.example", "https://foo.example/watch?v=abcdefghijk"],
+        ["https://foo.example", "https://foo.example/watch?v=abcdefghijk"],
+        ["foo.example/", "https://foo.example/watch?v=abcdefghijk"],
+        ["http://foo.example/", "http://foo.example/watch?v=abcdefghijk"],
     ]) {
         test(`saved ${JSON.stringify(typed)} survives a reload`, () =>
             withPage({}, async (page, state) => {
@@ -93,7 +93,7 @@ describe("instance URL validation", () => {
             await saveInstance(page, "foo.example:8080");
             await page.goto(HOME);
             const url = await clickAndGetNavigation(page, state, "#watch");
-            assert.equal(url, "https://foo.example:8080/watch?v=abc");
+            assert.equal(url, "https://foo.example:8080/watch?v=abcdefghijk");
         }));
 
     test("an invalid value already in storage falls back to the default", () =>
@@ -106,7 +106,7 @@ describe("instance URL validation", () => {
             );
             await page.goto(HOME);
             const url = await clickAndGetNavigation(page, state, "#watch");
-            assert.equal(url, "https://inv.nadeko.net/watch?v=abc");
+            assert.equal(url, "https://inv.nadeko.net/watch?v=abcdefghijk");
         }));
 });
 
@@ -242,13 +242,17 @@ describe("dialog click handling", () => {
 });
 
 describe("video ID encoding", () => {
-    test("extra characters in the path cannot inject query parameters", () =>
-        withPage({}, async (page, state) => {
-            const url = new URL(
-                await clickAndGetNavigation(page, state, "#shorts-amp"),
-            );
-            assert.deepEqual([...url.searchParams.keys()], ["v"]);
-        }));
+    for (const id of ["shorts-amp", "shorts-semi", "shorts-short"]) {
+        test(`${id}: a malformed video ID is left to the browser`, () =>
+            withPage({}, async (page, state) => {
+                await page.click(`#${id}`);
+                await page.waitForTimeout(500);
+                assert.deepEqual(
+                    state.navigations.filter((u) => !u.startsWith(HOME)),
+                    [],
+                );
+            }));
+    }
 
     test("a trailing slash is not part of the video ID", () =>
         withPage({}, async (page, state) => {
@@ -257,7 +261,7 @@ describe("video ID encoding", () => {
                 state,
                 "#shorts-slash",
             );
-            assert.equal(url, "https://inv.nadeko.net/watch?v=abc");
+            assert.equal(url, "https://inv.nadeko.net/watch?v=abcdefghijk");
         }));
 });
 
@@ -269,7 +273,7 @@ describe("click redirection", () => {
                 state,
                 "#svg-link svg",
             );
-            assert.equal(url, "https://inv.nadeko.net/watch?v=svg");
+            assert.equal(url, "https://inv.nadeko.net/watch?v=svgvideo123");
         }));
 
     for (const modifier of ["Control", "Meta", "Shift", "Alt"]) {

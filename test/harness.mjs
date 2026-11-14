@@ -9,10 +9,12 @@ export const HOME = "https://www.youtube.com/";
 export const INSTANCES = { "a.example": "US 🇺🇸", "b.example": "DE 🇩🇪" };
 
 const PAGE_HTML = `
-    <a id="watch" href="/watch?v=abc">watch</a>
-    <a id="shorts-amp" href="/shorts/abc&foo=bar">shorts with extra params</a>
-    <a id="shorts-slash" href="/shorts/abc/">shorts with trailing slash</a>
-    <a id="svg-link" href="/watch?v=svg"><svg width="40" height="40"><rect width="40" height="40" /></svg></a>
+    <a id="watch" href="/watch?v=abcdefghijk">watch</a>
+    <a id="shorts-amp" href="/shorts/abcdefghijk&foo=bar">shorts with extra params</a>
+    <a id="shorts-slash" href="/shorts/abcdefghijk/">shorts with trailing slash</a>
+    <a id="shorts-semi" href="/shorts/abcdefghijk;foo">shorts with semicolon suffix</a>
+    <a id="shorts-short" href="/shorts/abc">shorts with too-short ID</a>
+    <a id="svg-link" href="/watch?v=svgvideo123"><svg width="40" height="40"><rect width="40" height="40" /></svg></a>
 `;
 
 let bundle;

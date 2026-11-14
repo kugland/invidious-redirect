@@ -1,6 +1,9 @@
 /** A YouTube video URL in the form `/watch?v=ID` or `/shorts/ID`. */
 export type VideoUrl = string;
 
+/** YouTube video IDs are 11 characters of `[A-Za-z0-9_-]`. Anything else is not a video link. */
+const VIDEO_ID_RE = /^[\w-]{11}$/;
+
 /** Get the first segment of a path, decoded (`"abc/"` and `"abc/def"` both give `"abc"`). */
 function pathSegment(path: string): string {
     return decodeURIComponent(path.split("/")[0]);
@@ -25,7 +28,7 @@ export function getVideoId(url: string): string {
         } else if (urlObj.hostname === "youtu.be") {
             videoId = pathSegment(urlObj.pathname.slice(1));
         }
-        if (videoId) {
+        if (videoId && VIDEO_ID_RE.test(videoId)) {
             return videoId;
         }
     } catch (e) {
